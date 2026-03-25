@@ -10,21 +10,21 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:#080C14;--bg2:#0C1018;--bg3:#101520;--bg4:#141b27;
-      --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.1);
-      --text:#E8EFF8;--muted:#6B7685;--muted2:#9BA3AE;
-      --a1:#3AABFF;--a2:#7C3FFF;--a3:#FF3A8C;
-      --grad:linear-gradient(135deg,#3AABFF,#7C3FFF);
-      --grad2:linear-gradient(135deg,#7C3FFF,#FF3A8C);
-      --glow1:rgba(58,171,255,0.2);--glow2:rgba(124,63,255,0.2);
+      --bg:#0D0812;--bg2:#110D17;--bg3:#16101E;--bg4:#1C1428;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+      --text:#F0EAF8;--muted:#7A6B88;--muted2:#B0A0C0;
+      --a1:#C840FF;--a2:#FF3A8C;--a3:#9B30FF;
+      --grad:linear-gradient(135deg,#C840FF,#FF3A8C);
+      --grad2:linear-gradient(135deg,#9B30FF,#FF6AB0);
+      --glow1:rgba(200,64,255,0.25);--glow2:rgba(255,58,140,0.22);
       --radius:16px;--radius2:24px;
     }
     html{scroll-behavior:smooth}
     body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
     ::-webkit-scrollbar{width:5px}
     ::-webkit-scrollbar-track{background:var(--bg)}
-    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#3AABFF,#7C3FFF);border-radius:10px}
-    ::selection{background:rgba(58,171,255,0.25);color:#fff}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#C840FF,#FF3A8C);border-radius:10px}
+    ::selection{background:rgba(200,64,255,0.28);color:#fff}
 
     /* ══════════════════════════════════════════════════════
        BACKGROUND SYSTEM — GPU-OPTIMISED DEPTH
@@ -59,14 +59,14 @@
       will-change:transform;
       background:
         radial-gradient(ellipse 120% 75% at 10% -5%,
-          rgba(57,168,255,0.18) 0%, transparent 52%),
+          rgba(180,40,255,0.22) 0%, transparent 52%),
         radial-gradient(ellipse 100% 65% at 94% 115%,
-          rgba(123,60,255,0.20) 0%, transparent 52%),
+          rgba(255,58,140,0.18) 0%, transparent 52%),
         radial-gradient(ellipse 60%  40% at 55% 80%,
-          rgba(100,40,220,0.10) 0%, transparent 60%),
+          rgba(140,30,200,0.12) 0%, transparent 60%),
         radial-gradient(ellipse 50%  35% at 80% 20%,
-          rgba(255,58,140,0.08) 0%, transparent 55%),
-        #080C14;
+          rgba(255,80,180,0.10) 0%, transparent 55%),
+        #0D0812;
     }
 
     /* ── Layer 2: glow blob group ──────────────────────────
@@ -81,52 +81,53 @@
     .bg-blob{position:absolute;border-radius:50%}
 
     /* Blob A — electric blue, upper-left */
+    /* Blob A — violet intense, haut-gauche */
     .bb-blue{
       width:min(110vw,1200px);height:min(110vw,1200px);
       top:-40%;left:-25%;
       background:radial-gradient(circle at 38% 38%,
-        rgba(57,168,255,0.72) 0%,
-        rgba(57,168,255,0.28) 40%,
+        rgba(180,40,255,0.70) 0%,
+        rgba(150,30,220,0.25) 40%,
         transparent 65%);
       animation:blobA 20s ease-in-out infinite alternate;
     }
-    /* Blob B — neon purple, lower-right */
+    /* Blob B — rose vif, bas-droite */
     .bb-purple{
       width:min(100vw,1100px);height:min(100vw,1100px);
       bottom:-38%;right:-28%;
       background:radial-gradient(circle at 62% 62%,
-        rgba(123,60,255,0.75) 0%,
-        rgba(123,60,255,0.28) 40%,
+        rgba(255,58,140,0.72) 0%,
+        rgba(255,40,120,0.26) 40%,
         transparent 65%);
       animation:blobB 24s ease-in-out infinite alternate;
     }
-    /* Blob C — mid blue-purple, center */
+    /* Blob C — violet-rose milieu */
     .bb-mid{
       width:min(70vw,800px);height:min(70vw,800px);
       top:25%;left:15%;
       background:radial-gradient(circle at 44% 44%,
-        rgba(90,114,255,0.38) 0%,
-        rgba(57,168,255,0.12) 48%,
+        rgba(200,50,255,0.36) 0%,
+        rgba(180,30,200,0.12) 48%,
         transparent 68%);
       animation:blobC 18s ease-in-out infinite alternate;
     }
-    /* Blob D — rose/magenta accent, top-right */
+    /* Blob D — magenta chaud, haut-droite */
     .bb-rose{
       width:min(65vw,720px);height:min(65vw,720px);
       top:-15%;right:-10%;
       background:radial-gradient(circle at 50% 50%,
-        rgba(255,58,140,0.38) 0%,
-        rgba(200,40,180,0.14) 44%,
+        rgba(255,80,200,0.45) 0%,
+        rgba(220,40,180,0.16) 44%,
         transparent 68%);
       animation:blobD 26s ease-in-out infinite alternate;
     }
-    /* Blob E — cyan accent, bottom-left */
+    /* Blob E — violet doux, bas-gauche */
     .bb-cyan{
       width:min(55vw,620px);height:min(55vw,620px);
       bottom:-10%;left:5%;
       background:radial-gradient(circle at 50% 50%,
-        rgba(0,220,255,0.28) 0%,
-        rgba(0,180,255,0.08) 44%,
+        rgba(160,60,255,0.32) 0%,
+        rgba(120,40,220,0.10) 44%,
         transparent 68%);
       animation:blobE 22s ease-in-out infinite alternate;
     }
@@ -169,8 +170,8 @@
       top:-64px;left:0;right:0;bottom:-64px;
       will-change:transform;
       background-image:
-        linear-gradient(rgba(57,168,255,0.09) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(123,60,255,0.07) 1px, transparent 1px);
+        linear-gradient(rgba(200,64,255,0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,58,140,0.07) 1px, transparent 1px);
       background-size:64px 64px;
       animation:gridDrift 12s linear infinite;
       -webkit-mask-image:linear-gradient(to bottom,
@@ -187,9 +188,9 @@
       position:absolute;inset:0;pointer-events:none;will-change:transform,opacity;
       background:linear-gradient(105deg,
         transparent 30%,
-        rgba(57,168,255,0.07) 45%,
-        rgba(123,60,255,0.10) 55%,
-        rgba(255,58,140,0.06) 62%,
+        rgba(200,64,255,0.09) 42%,
+        rgba(255,58,140,0.12) 54%,
+        rgba(255,100,200,0.07) 63%,
         transparent 75%);
       animation:auroraSweep 8s ease-in-out infinite;
     }
@@ -200,7 +201,7 @@
       100%{transform:translateX(60%)  skewX(-8deg);opacity:0}
     }
 
-    /* ── Layer 3: canvas — particles (JS-driven) ───────── */
+    /* ── Layer 3: canvas — particles ───────── */
     #bg-canvas{position:absolute;inset:0;width:100%;height:100%}
 
     /* ── Layer 4: vignette — radial dark mask ───────────────
@@ -239,25 +240,35 @@
     /* ═══ NAV ═══ */
     nav{
       position:fixed;top:0;left:0;right:0;z-index:1000;
-      padding:0 max(24px,5%);height:60px;
+      padding:0 max(24px,5%);height:160px;
       display:flex;align-items:center;justify-content:space-between;
       background:rgba(8,12,20,0);
-      transition:background 0.5s, box-shadow 0.5s, backdrop-filter 0.5s;
+      transition:height 0.4s cubic-bezier(.25,.8,.25,1),
+                 background 0.4s, box-shadow 0.4s, backdrop-filter 0.4s;
     }
     nav.scrolled{
-      background:rgba(8,12,20,0.82);
+      height:72px;
+      background:rgba(13,8,18,0.88);
       backdrop-filter:blur(24px) saturate(180%);
-      box-shadow:0 1px 0 var(--border), 0 4px 32px rgba(0,0,0,0.4);
+      box-shadow:0 1px 0 var(--border), 0 4px 32px rgba(0,0,0,0.5);
+    }
+    nav.scrolled .logo-img{
+      height:62px;
     }
     .nav-logo{
-      font-size:1.2rem;font-weight:900;letter-spacing:-0.03em;
-      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-      text-decoration:none;display:flex;align-items:center;gap:8px;
+      text-decoration:none;display:flex;align-items:center;padding-right:20px;flex-shrink:0;
     }
-    .logo-mark{
-      width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
-      filter:drop-shadow(0 0 10px rgba(58,171,255,0.45));
+    .logo-img{
+      height:140px;width:auto;max-width:480px;object-fit:contain;
+      filter:drop-shadow(0 0 12px rgba(200,64,255,0.55));
+      transition:height 0.4s cubic-bezier(.25,.8,.25,1),
+                 transform 0.2s ease, filter 0.2s ease;
     }
+    .logo-img:hover{
+      transform:scale(1.04);
+      filter:drop-shadow(0 0 24px rgba(200,64,255,0.85)) drop-shadow(0 0 10px rgba(255,58,140,0.55));
+    }
+    @media(max-width:768px){.logo-img{height:90px;max-width:280px}}
     .nav-center{display:flex;gap:0.25rem}
     .nav-center a{
       color:var(--muted2);text-decoration:none;font-size:0.84rem;font-weight:500;
@@ -284,7 +295,7 @@
     /* ═══ HERO ═══ */
     #hero{
       min-height:100vh;display:flex;align-items:center;justify-content:center;
-      text-align:center;padding:80px max(24px,5%) 60px;
+      text-align:center;padding:180px max(24px,5%) 60px;
       position:relative;overflow:hidden;
     }
     .hero-orb{position:absolute;pointer-events:none;border-radius:50%;filter:blur(80px)}
@@ -360,6 +371,16 @@
       transition:all 0.25s;backdrop-filter:blur(8px);
     }
     .btn-hero-ghost:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);transform:translateY(-2px)}
+    .glow-word{
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      filter:drop-shadow(0 0 8px rgba(200,64,255,0.8));
+      animation:glowPulse 2s ease-in-out infinite;
+      font-weight:900;
+    }
+    @keyframes glowPulse{
+      0%,100%{filter:drop-shadow(0 0 6px rgba(200,64,255,0.7)) drop-shadow(0 0 12px rgba(255,58,140,0.4))}
+      50%{filter:drop-shadow(0 0 14px rgba(200,64,255,1)) drop-shadow(0 0 28px rgba(255,58,140,0.7))}
+    }
 
     .hero-trust{
       display:flex;align-items:center;justify-content:center;gap:1.25rem;
@@ -962,7 +983,7 @@
     /* ═══ FOOTER ═══ */
     footer{background:var(--bg2);border-top:1px solid var(--border);padding:3.5rem max(24px,5%);text-align:center}
     .footer-logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:0.5rem}
-    .footer-logo-mark{width:38px;height:38px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 12px rgba(58,171,255,0.5))}
+    .footer-logo-img{height:90px;width:auto;max-width:320px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(200,64,255,0.6))}
     .footer-logo-text{font-size:1.4rem;font-weight:900;letter-spacing:-0.03em;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .footer-tagline{color:var(--muted);font-size:0.85rem;margin-bottom:2rem}
     .footer-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
@@ -1027,7 +1048,7 @@
       .burger{display:flex}
       .nav-center.open{
         display:flex;flex-direction:column;
-        position:fixed;top:60px;left:0;right:0;
+        position:fixed;top:160px;left:0;right:0;
         background:rgba(8,12,20,0.97);backdrop-filter:blur(20px);
         padding:1.5rem max(24px,5%) 2rem;
         border-bottom:1px solid var(--border);gap:0.25rem;z-index:999;
@@ -1076,45 +1097,14 @@
   </div>
   <div id="bg-grid"></div><!-- CSS tech grid, drift -->
   <div id="bg-aurora"></div><!-- aurora sweep -->
-  <canvas id="bg-canvas"></canvas><!-- particles -->
   <!-- vignette lives in #bg-wrap::after — no extra div needed -->
 </div>
+<canvas id="bg-canvas"></canvas><!-- particules interactives — au-dessus du contenu -->
 
 <!-- NAV -->
 <nav id="nav">
   <a href="#" class="nav-logo">
-    <div class="logo-mark">
-      <!-- PixelForge Logo — pixelated anvil + floating pixels, blue→purple gradient -->
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 70" width="32" height="28">
-        <defs>
-          <linearGradient id="pfg-nav" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#39A8FF"/>
-            <stop offset="100%" stop-color="#7B3CFF"/>
-          </linearGradient>
-        </defs>
-        <!-- Floating pixel cross (top-right — digital accent) -->
-        <rect x="51" y="2"  width="5" height="20" rx="1.5" fill="url(#pfg-nav)"/><!-- vertical -->
-        <rect x="43" y="9"  width="21" height="6" rx="1.5" fill="url(#pfg-nav)"/><!-- horizontal -->
-        <!-- Scattered pixel fragments -->
-        <rect x="37" y="2"  width="5"  height="5"  rx="1"   fill="url(#pfg-nav)" opacity="0.8"/>
-        <rect x="68" y="5"  width="4"  height="4"  rx="1"   fill="url(#pfg-nav)" opacity="0.65"/>
-        <rect x="71" y="17" width="3"  height="3"  rx="0.5" fill="url(#pfg-nav)" opacity="0.45"/>
-        <!-- ── ANVIL BODY ── -->
-        <!-- Top work surface (wide flat face) -->
-        <rect x="2"  y="28" width="52" height="12" rx="3"   fill="url(#pfg-nav)"/>
-        <!-- Horn — right-pointing triangular beak -->
-        <path d="M54 28 Q73 34 54 40 Z"             fill="url(#pfg-nav)"/>
-        <!-- Waist / neck (narrower middle) -->
-        <rect x="8"  y="40" width="38" height="8"  rx="2"   fill="url(#pfg-nav)"/>
-        <!-- Base pedestal -->
-        <rect x="2"  y="48" width="52" height="13" rx="4"   fill="url(#pfg-nav)"/>
-        <!-- Left foot -->
-        <rect x="2"  y="57" width="16" height="8"  rx="3"   fill="url(#pfg-nav)"/>
-        <!-- Right foot -->
-        <rect x="38" y="57" width="16" height="8"  rx="3"   fill="url(#pfg-nav)"/>
-      </svg>
-    </div>
-    PixelForge
+    <img src="logo1.png" alt="PixelForge" class="logo-img"/>
   </a>
   <div class="nav-center" id="navLinks">
     <a href="#services">Services</a>
@@ -1157,7 +1147,7 @@
         Voir nos réalisations
       </a>
       <a href="#contact" class="btn-hero-ghost">
-        Créer mon site gratuitement
+        Demander un devis <span class="glow-word">GRATUIT</span>
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
@@ -1882,28 +1872,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo-wrap">
-    <div class="footer-logo-mark">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 70" width="38" height="33">
-        <defs>
-          <linearGradient id="pfg-footer" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#39A8FF"/>
-            <stop offset="100%" stop-color="#7B3CFF"/>
-          </linearGradient>
-        </defs>
-        <rect x="51" y="2"  width="5" height="20" rx="1.5" fill="url(#pfg-footer)"/>
-        <rect x="43" y="9"  width="21" height="6" rx="1.5" fill="url(#pfg-footer)"/>
-        <rect x="37" y="2"  width="5"  height="5"  rx="1"   fill="url(#pfg-footer)" opacity="0.8"/>
-        <rect x="68" y="5"  width="4"  height="4"  rx="1"   fill="url(#pfg-footer)" opacity="0.65"/>
-        <rect x="71" y="17" width="3"  height="3"  rx="0.5" fill="url(#pfg-footer)" opacity="0.45"/>
-        <rect x="2"  y="28" width="52" height="12" rx="3"   fill="url(#pfg-footer)"/>
-        <path d="M54 28 Q73 34 54 40 Z"             fill="url(#pfg-footer)"/>
-        <rect x="8"  y="40" width="38" height="8"  rx="2"   fill="url(#pfg-footer)"/>
-        <rect x="2"  y="48" width="52" height="13" rx="4"   fill="url(#pfg-footer)"/>
-        <rect x="2"  y="57" width="16" height="8"  rx="3"   fill="url(#pfg-footer)"/>
-        <rect x="38" y="57" width="16" height="8"  rx="3"   fill="url(#pfg-footer)"/>
-      </svg>
-    </div>
-    <span class="footer-logo-text">PixelForge</span>
+    <img src="logo1.png" alt="PixelForge" class="footer-logo-img"/>
   </div>
   <div class="footer-tagline">Forgez votre présence digitale</div>
   <div class="footer-links">
@@ -1925,14 +1894,14 @@
 
 <!-- MOBILE STICKY CTA -->
 <div class="mobile-cta-bar">
-  <a href="#contact">🚀 Créer mon site — Devis gratuit</a>
+  <a href="#contact">🚀 Demander un devis <span class="glow-word">GRATUIT</span></a>
 </div>
 
 <script>
 // ── Nav scroll effect
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 20);
+  nav.classList.toggle('scrolled', window.scrollY > 60);
 }, {passive:true});
 
 // ── Mobile nav toggle
@@ -2110,46 +2079,45 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
 // ════════════════════════════════════════════════════════════
 (function initBackground() {
 
-  // ── prefers-reduced-motion check ──────────────────────────
-  // Canvas is already hidden via CSS media query; we also skip
-  // the JS loop entirely so no RAF is registered.
   if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
 
-  // ── DOM refs ──────────────────────────────────────────────
-  const l1     = document.getElementById('bg-l1');
-  const l2     = document.getElementById('bg-l2');
-  const orbs   = document.querySelectorAll('.hero-orb');
+  const l1   = document.getElementById('bg-l1');
+  const l2   = document.getElementById('bg-l2');
+  const orbs = document.querySelectorAll('.hero-orb');
   const canvas = document.getElementById('bg-canvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d', {alpha: true});
+  const ctx = canvas.getContext('2d', {alpha:true});
 
-  // ── Device capabilities ───────────────────────────────────
-  // Touch = mobile/tablet: fewer particles, no scroll parallax.
-  const isTouch  = navigator.maxTouchPoints > 0;
-  // Particle budget: mobile gets ~40% of desktop count.
-  const BUDGET   = isTouch ? { pixel:6, dot:10, shimmer:6 }
-                           : { pixel:16, dot:22, shimmer:12 };
+  const isTouch    = navigator.maxTouchPoints > 0;
+  const N          = isTouch ? 35 : 70;
+  const LINK_DIST  = isTouch ? 130 : 170;
+  const REPEL_R    = 260;   // mouse repulsion radius (px)
+  const REPEL_F    = 9;     // repulsion strength — very strong
+  const ATTRACT_F  = 0.007; // inter-cube soft pull
 
-  // ── State ─────────────────────────────────────────────────
-  let W = 0, H = 0;
-  let rafId = null;
-  let pts   = [];           // particle array
+  let W = 0, H = 0, rafId = null, pts = [];
 
-  // Parallax: raw mouse target, lerped current value
-  let txM = 0, tyM = 0;    // mouse target  (−0.5 … +0.5)
-  let cx  = 0, cy  = 0;    // current lerped value
-  // Last written transforms — skip DOM write if delta < EPS
+  // Mouse: real pixel coords (not normalised)
+  let mouseX = -9999, mouseY = -9999;
+  // Parallax (normalised -0.5…+0.5)
+  let txM = 0, tyM = 0, cx = 0, cy = 0;
   const EPS = 0.08;
   let l1x = 9999, l1y = 9999, l2x = 9999, l2y = 9999;
-
-  // Scroll (only used on non-touch)
   let sY = 0;
 
-  // ── Input listeners ───────────────────────────────────────
   window.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
     txM = e.clientX / innerWidth  - 0.5;
     tyM = e.clientY / innerHeight - 0.5;
   }, {passive:true});
+
+  // Touch support for mobile reactivity
+  window.addEventListener('touchmove', e => {
+    const t = e.touches[0];
+    mouseX = t.clientX; mouseY = t.clientY;
+  }, {passive:true});
+  window.addEventListener('touchend', () => { mouseX = -9999; mouseY = -9999; }, {passive:true});
 
   if (!isTouch) {
     window.addEventListener('scroll', () => { sY = scrollY; }, {passive:true});
@@ -2166,8 +2134,8 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
     // Grid floor: 78% down — sits within the hero section
     const gBot = H * 0.78;
 
-    // Exact brand blue: #39A8FF = rgb(57,168,255)
-    const R = 57, G = 168, B = 255;
+    // Brand violet: #C840FF = rgb(200,64,255)
+    const R = 200, G = 64, B = 255;
 
     // Very slow scroll: lines appear to drift toward viewer.
     // 0.00016/frame ≈ one full cycle every ~6250 frames (~100 s at 60fps)
@@ -2239,56 +2207,41 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
     ctx.restore();
   }
 
-  // ── Particle helpers ──────────────────────────────────────
-  // Pre-built rgb strings — avoids string allocation in hot loop.
-  // Colors: electric blue, neon purple, mid blue-purple (bias blue).
-  const PALETTE = [
-    'rgb(57,168,255)',    // #39A8FF
-    'rgb(123,60,255)',    // #7B3CFF
-    'rgb(57,168,255)',    // bias blue
-    'rgb(82,108,255)',    // mid
+  // ── Cube palette — violet / rose / lavender ──────────────
+  const COLS = [
+    [200, 64, 255],   // #C840FF violet
+    [255, 58, 140],   // #FF3A8C rose
+    [160, 80, 255],   // lavender
+    [220, 50, 210],   // magenta
+    [255, 90, 180],   // pink
   ];
-  // Per-type configs
-  const CFG = {
-    pixel:   {szA:1.3, szB:2.6, spA:0.008, spB:0.032, opA:0.06, opB:0.22},
-    dot:     {szA:0.4, szB:1.3, spA:0.010, spB:0.040, opA:0.04, opB:0.16},
-    shimmer: {szA:0.6, szB:1.6, spA:0.000, spB:0.004, opA:0.03, opB:0.12},
-  };
+  function rnd(a, b) { return a + Math.random() * (b - a); }
 
-  function rnd(a, b)  { return a + Math.random() * (b - a); }
-  function rndInt(n)  { return Math.floor(Math.random() * n); }
-
-  function spawn(kind, atBottom) {
-    const c = CFG[kind];
-    const sp = rnd(c.spA, c.spB);
+  function mkCube(randomPos) {
+    const col = COLS[Math.floor(Math.random() * COLS.length)];
     return {
-      kind,
-      x:   Math.random() * W,
-      y:   atBottom ? rnd(0, H) : H + 8,
-      sz:  rnd(c.szA, c.szB),
-      col: PALETTE[rndInt(PALETTE.length)],
-      op:  rnd(c.opA, c.opB),
-      // velocity
-      vx:  kind === 'shimmer' ? rnd(-0.002,0.002) : rnd(-sp*0.45, sp*0.45),
-      vy:  kind === 'shimmer' ? rnd(-0.002,0.002) : -(sp + 0.005),
-      // opacity pulse
-      ph:  Math.random() * Math.PI * 2,
-      phS: kind === 'shimmer' ? rnd(0.010,0.018) : rnd(0.002,0.005),
+      x: randomPos ? Math.random() * W : rnd(-50, W + 50),
+      y: randomPos ? Math.random() * H : rnd(-50, H + 50),
+      vx: rnd(-0.4, 0.4),
+      vy: rnd(-0.4, 0.4),
+      ax: 0, ay: 0,
+      sz: rnd(5, 13),                 // plus grand — visible sur contenu
+      rot: Math.random() * Math.PI * 2,
+      rotV: rnd(-0.012, 0.012),
+      baseOp: rnd(0.12, 0.28),        // semi-transparent au repos
+      col,
     };
   }
 
   function resize() {
     W = canvas.width  = innerWidth;
     H = canvas.height = innerHeight;
-    // Reset tracked transforms so they're rewritten after resize
     l1x = l1y = l2x = l2y = 9999;
   }
 
   function buildParticles() {
     pts = [];
-    for (const [kind, n] of Object.entries(BUDGET)) {
-      for (let i = 0; i < n; i++) pts.push(spawn(kind, true));
-    }
+    for (let i = 0; i < N; i++) pts.push(mkCube(true));
   }
 
   // ── Main RAF loop ─────────────────────────────────────────
@@ -2321,54 +2274,112 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
       o.style.transform = `translate(${(cx*f).toFixed(1)}px,${(cy*f).toFixed(1)}px)`;
     });
 
-    // ── B) Grid + Particles ───────────────────────────────
+    // ── B) Clear + Grid ───────────────────────────────────
     ctx.clearRect(0, 0, W, H);
-
-    // Grid is drawn first (bottom of canvas layer order).
-    // Skip on mobile: touch devices already drop the mid blob,
-    // and the grid adds fill-rate cost on small GPU budgets.
     if (!isTouch) drawGrid();
 
-    // Group draws by fillStyle to minimise GPU state changes.
-    // Each palette color is drawn in one batch.
-    for (let ci = 0; ci < PALETTE.length; ci++) {
-      const col = PALETTE[ci];
-      ctx.fillStyle = col;
+    // ── C) Physics ────────────────────────────────────────
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      p.ax = 0; p.ay = 0;
 
-      for (let i = pts.length - 1; i >= 0; i--) {
-        const p = pts[i];
-        if (p.col !== col) continue;  // handled in another batch
+      // 1) Mouse REPULSION — cubes flee the cursor
+      const mdx = mouseX - p.x, mdy = mouseY - p.y;
+      const md2 = mdx * mdx + mdy * mdy;
+      if (md2 < REPEL_R * REPEL_R && mouseX > -999) {
+        const md = Math.sqrt(md2) || 1;
+        const f  = REPEL_F * (1 - md / REPEL_R) * (1 - md / REPEL_R);
+        p.ax -= (mdx / md) * f;
+        p.ay -= (mdy / md) * f;
+      }
 
-        // Sine-pulse opacity — no Math.sin branch inside hot path
-        p.ph += p.phS;
-        const sine  = 0.5 + 0.5 * Math.sin(p.ph);
-        // shimmer: full pulse swing; others: subtle
-        ctx.globalAlpha = p.op * (p.kind === 'shimmer' ? sine : 0.55 + 0.45 * sine);
-
-        if (p.kind === 'pixel') {
-          // Axis-aligned fillRect — no save/restore, no rotate.
-          // At 1.3–2.6px, rotation is sub-pixel and invisible.
-          const s = p.sz * 2 | 0;            // integer pixel size
-          ctx.fillRect(p.x | 0, p.y | 0, s, s);
-        } else {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.sz, 0, 6.2832); // 6.2832 ≈ 2π, avoids Math.PI
-          ctx.fill();
-        }
-
-        // Drift
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Boundary / recycling
-        if (p.kind === 'shimmer') {
-          if (p.x < -8) p.x = W + 8; else if (p.x > W + 8) p.x = -8;
-          if (p.y < -8) p.y = H + 8; else if (p.y > H + 8) p.y = -8;
-        } else {
-          if (p.y < -p.sz * 4) { pts[i] = spawn(p.kind, false); continue; }
-          if (p.x < -8) p.x = W + 8; else if (p.x > W + 8) p.x = -8;
+      // 2) Soft inter-cube attraction (only within LINK_DIST)
+      for (let j = i + 1; j < pts.length; j++) {
+        const q = pts[j];
+        const ex = q.x - p.x, ey = q.y - p.y;
+        const ed2 = ex * ex + ey * ey;
+        if (ed2 < LINK_DIST * LINK_DIST) {
+          const ed = Math.sqrt(ed2) || 1;
+          const f = ATTRACT_F * (1 - ed / LINK_DIST);
+          p.ax += (ex / ed) * f; p.ay += (ey / ed) * f;
+          q.ax -= (ex / ed) * f; q.ay -= (ey / ed) * f;
         }
       }
+
+      // Integrate + friction + speed cap
+      p.vx = (p.vx + p.ax) * 0.95;
+      p.vy = (p.vy + p.ay) * 0.95;
+      const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      if (spd > 10) { p.vx = p.vx / spd * 10; p.vy = p.vy / spd * 10; }
+      p.x  += p.vx;  p.y  += p.vy;
+      p.rot += p.rotV + spd * 0.03; // spin faster when pushed
+
+      // Wrap edges with margin
+      if (p.x < -20) p.x = W + 20; else if (p.x > W + 20) p.x = -20;
+      if (p.y < -20) p.y = H + 20; else if (p.y > H + 20) p.y = -20;
+    }
+
+    // ── D) Draw connections ───────────────────────────────
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      for (let j = i + 1; j < pts.length; j++) {
+        const q = pts[j];
+        const ex = q.x - p.x, ey = q.y - p.y;
+        const ed2 = ex * ex + ey * ey;
+        if (ed2 < LINK_DIST * LINK_DIST) {
+          const ed = Math.sqrt(ed2);
+          const t  = 1 - ed / LINK_DIST;
+          // blend colors of both cubes
+          const [r1,g1,b1] = p.col, [r2,g2,b2] = q.col;
+          const r = (r1+r2)>>1, g = (g1+g2)>>1, b = (b1+b2)>>1;
+          ctx.strokeStyle = `rgba(${r},${g},${b},${(t*t*0.55).toFixed(3)})`;
+          ctx.lineWidth = t * 1.8;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+        }
+      }
+    }
+
+    // ── E) Draw cursor ripple ─────────────────────────────
+    if (mouseX > -999) {
+      const rg = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, REPEL_R);
+      rg.addColorStop(0,   'rgba(200,64,255,0.13)');
+      rg.addColorStop(0.4, 'rgba(200,64,255,0.05)');
+      rg.addColorStop(1,   'rgba(200,64,255,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(mouseX, mouseY, REPEL_R, 0, 6.2832);
+      ctx.fill();
+      // Inner ring
+      ctx.strokeStyle = 'rgba(200,64,255,0.25)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(mouseX, mouseY, 18, 0, 6.2832);
+      ctx.stroke();
+    }
+
+    // ── F) Draw cubes ─────────────────────────────────────
+    for (let i = 0; i < pts.length; i++) {
+      const p   = pts[i];
+      const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+      const boost = 1 + Math.min(spd * 0.5, 3.5);    // s'illumine fortement
+      const op  = Math.min(0.9, p.baseOp * boost);
+      const s   = p.sz * (1 + Math.min(spd * 0.1, 1.0)); // grossit quand poussé
+      const [r, g, b] = p.col;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      // Glow — visible même sur le contenu
+      ctx.shadowColor = `rgba(${r},${g},${b},${Math.min(0.9, op * 1.5)})`;
+      ctx.shadowBlur  = 6 + spd * 4;
+      ctx.globalAlpha = op;
+      ctx.fillStyle   = `rgba(${r},${g},${b},0.85)`;
+      ctx.fillRect(-s/2, -s/2, s, s);
+      ctx.shadowBlur  = 0;
+      ctx.strokeStyle = `rgba(${r},${g},${b},0.9)`;
+      ctx.lineWidth   = 0.8;
+      ctx.strokeRect(-s/2, -s/2, s, s);
+      ctx.restore();
     }
 
     ctx.globalAlpha = 1;
