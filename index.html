@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>PixelForge — Forgez votre présence digitale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#080C14;--bg2:#0C1018;--bg3:#101520;--bg4:#141b27;
+      --border:rgba(255,255,255,0.055);--border2:rgba(255,255,255,0.1);
+      --text:#E8EFF8;--muted:#6B7685;--muted2:#9BA3AE;
+      --a1:#3AABFF;--a2:#7C3FFF;--a3:#FF3A8C;
+      --grad:linear-gradient(135deg,#3AABFF,#7C3FFF);
+      --grad2:linear-gradient(135deg,#7C3FFF,#FF3A8C);
+      --glow1:rgba(58,171,255,0.2);--glow2:rgba(124,63,255,0.2);
+      --radius:16px;--radius2:24px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#3AABFF,#7C3FFF);border-radius:10px}
+    ::selection{background:rgba(58,171,255,0.25);color:#fff}
+
+    /* ══════════════════════════════════════════════════════
+       BACKGROUND SYSTEM — GPU-OPTIMISED DEPTH
+       Architecture:
+         #bg-l1  · gradient base        (parallax: slowest)
+         #bg-l2  · glow blob group      (parallax: medium)
+           └ 3 blob divs — NO filter here; blur is on parent
+         #bg-canvas · pixel particles   (JS canvas, 1× pixel)
+         #bg-wrap::after · vignette     (pseudo-element, no DOM)
+
+       Key optimisation: filter:blur on the GROUP (#bg-l2), not
+       on each individual blob. This collapses N GPU blur passes
+       into 1, the single biggest mobile perf win.
+       All animations use only transform/opacity — no layout.
+    ══════════════════════════════════════════════════════ */
+
+    /* Stacking context keeps bg (z:-1) behind page content */
+    body{isolation:isolate}
+
+    #bg-wrap{
+      position:fixed;inset:0;z-index:-1;
+      pointer-events:none;overflow:hidden;
+      /* Isolate paint so browser skips bg when repainting UI */
+      contain:paint;
+    }
+
+    /* ── Layer 1: gradient base ────────────────────────────
+       Oversized by 6% so the parallax pan never shows edges.
+       will-change promotes it to its own compositor layer.   */
+    #bg-l1{
+      position:absolute;inset:-6%;
+      will-change:transform;
+      background:
+        radial-gradient(ellipse 110% 70% at 12% -8%,
+          rgba(57,168,255,0.09) 0%, transparent 52%),
+        radial-gradient(ellipse 90%  60% at 92% 112%,
+          rgba(123,60,255,0.10) 0%, transparent 52%),
+        radial-gradient(ellipse 50%  35% at 55%  78%,
+          rgba(100,40,220,0.04) 0%, transparent 60%),
+        #0B0F17;
+    }
+
+    /* ── Layer 2: glow blob group ──────────────────────────
+       Single filter:blur on the container = 1 GPU pass.
+       Blobs use exact brand palette: #39A8FF · #7B3CFF
+       transform-only animations stay on compositor thread  */
+    #bg-l2{
+      position:absolute;inset:-6%;
+      will-change:transform;
+      filter:blur(72px);
+    }
+    .bg-blob{position:absolute;border-radius:50%}
+
+    /* Blob A — #39A8FF electric blue, upper-left */
+    .bb-blue{
+      width:min(90vw,1000px);height:min(90vw,1000px);
+      top:-35%;left:-20%;
+      background:radial-gradient(circle at 38% 38%,
+        rgba(57,168,255,0.52) 0%,
+        rgba(57,168,255,0.14) 42%,
+        transparent 68%);
+      animation:blobA 28s ease-in-out infinite alternate;
+    }
+    /* Blob B — #7B3CFF neon purple, lower-right */
+    .bb-purple{
+      width:min(80vw,900px);height:min(80vw,900px);
+      bottom:-32%;right:-25%;
+      background:radial-gradient(circle at 62% 62%,
+        rgba(123,60,255,0.56) 0%,
+        rgba(123,60,255,0.16) 42%,
+        transparent 68%);
+      animation:blobB 34s ease-in-out infinite alternate;
+    }
+    /* Blob C — brand midpoint rgb(90,114,255), left-center */
+    .bb-mid{
+      width:min(60vw,680px);height:min(60vw,680px);
+      top:28%;left:10%;
+      background:radial-gradient(circle at 44% 44%,
+        rgba(90,114,255,0.22) 0%,
+        rgba(57,168,255,0.06) 50%,
+        transparent 70%);
+      animation:blobC 22s ease-in-out infinite alternate;
+    }
+
+    /* transform-only keyframes — compositor thread, zero repaints */
+    @keyframes blobA{
+      0%  {transform:translate(0,0)    scale(1)   }
+      30% {transform:translate(5%,6%)  scale(1.04)}
+      65% {transform:translate(9%,2%)  scale(0.97)}
+      100%{transform:translate(4%,11%) scale(1.08)}
+    }
+    @keyframes blobB{
+      0%  {transform:translate(0,0)      scale(1)   }
+      28% {transform:translate(-6%,-5%)  scale(0.94)}
+      62% {transform:translate(-10%,-2%) scale(1.04)}
+      100%{transform:translate(-5%,-9%)  scale(0.90)}
+    }
+    @keyframes blobC{
+      0%  {transform:translate(0,0)    scale(1)   }
+      45% {transform:translate(-5%,9%) scale(1.10)}
+      100%{transform:translate(4%,14%) scale(0.93)}
+    }
+
+    /* ── Layer 2.5: CSS tech grid ─────────────────────────
+       Pure CSS, no JS. One translateY keyframe = single
+       compositor-thread animation, zero repaints.
+       Oversized by one cell (64px) so the loop is invisible.
+       Blue horizontal + purple vertical → brand gradient feel. */
+    #bg-grid{
+      position:absolute;
+      top:-64px;left:0;right:0;bottom:-64px;
+      will-change:transform;
+      background-image:
+        linear-gradient(rgba(57,168,255,0.042) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123,60,255,0.036) 1px, transparent 1px);
+      background-size:64px 64px;
+      animation:gridDrift 16s linear infinite;
+      -webkit-mask-image:linear-gradient(to bottom,
+        transparent 0%,rgba(0,0,0,0.75) 14%,rgba(0,0,0,0.75) 86%,transparent 100%);
+      mask-image:linear-gradient(to bottom,
+        transparent 0%,rgba(0,0,0,0.75) 14%,rgba(0,0,0,0.75) 86%,transparent 100%);
+    }
+    @keyframes gridDrift{
+      0%  {transform:translateY(0)}
+      100%{transform:translateY(64px)}
+    }
+
+    /* ── Layer 3: canvas — particles (JS-driven) ───────── */
+    #bg-canvas{position:absolute;inset:0;width:100%;height:100%}
+
+    /* ── Layer 4: vignette — radial dark mask ───────────────
+       Tight ellipse: brightens the hero center,
+       crushes the outer edges for depth and focus.           */
+    #bg-wrap::after{
+      content:'';position:absolute;inset:0;pointer-events:none;
+      background:
+        /* tight center window */
+        radial-gradient(ellipse 72% 58% at 50% 32%,
+          transparent 18%,
+          rgba(4,7,14,0.42) 65%,
+          rgba(4,7,14,0.78) 100%),
+        /* extra edge crush at very bottom */
+        linear-gradient(to top,
+          rgba(4,7,14,0.55) 0%,
+          transparent 22%);
+    }
+
+    /* ── Reduced-motion ─────────────────────────────────── */
+    @media(prefers-reduced-motion:reduce){
+      .bg-blob{animation:none!important}
+      #bg-grid{animation:none!important}
+      #bg-canvas{display:none}
+    }
+
+    /* ── Mobile: lighter workload ───────────────────────── */
+    @media(max-width:768px){
+      #bg-l2{filter:blur(50px)}
+      .bb-blue  {width:min(140vw,500px);height:min(140vw,500px)}
+      .bb-purple{width:min(120vw,440px);height:min(120vw,440px)}
+      .bb-mid   {display:none}
+      #bg-grid  {display:none}
+    }
+
+    /* ═══ NAV ═══ */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:1000;
+      padding:0 max(24px,5%);height:60px;
+      display:flex;align-items:center;justify-content:space-between;
+      background:rgba(8,12,20,0);
+      transition:background 0.5s, box-shadow 0.5s, backdrop-filter 0.5s;
+    }
+    nav.scrolled{
+      background:rgba(8,12,20,0.82);
+      backdrop-filter:blur(24px) saturate(180%);
+      box-shadow:0 1px 0 var(--border), 0 4px 32px rgba(0,0,0,0.4);
+    }
+    .nav-logo{
+      font-size:1.2rem;font-weight:900;letter-spacing:-0.03em;
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      text-decoration:none;display:flex;align-items:center;gap:8px;
+    }
+    .logo-mark{
+      width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      filter:drop-shadow(0 0 10px rgba(58,171,255,0.45));
+    }
+    .nav-center{display:flex;gap:0.25rem}
+    .nav-center a{
+      color:var(--muted2);text-decoration:none;font-size:0.84rem;font-weight:500;
+      padding:0.4rem 0.875rem;border-radius:8px;transition:all 0.2s;
+    }
+    .nav-center a:hover{color:var(--text);background:rgba(255,255,255,0.06)}
+    .nav-right{display:flex;align-items:center;gap:0.75rem}
+    .nav-badge{
+      font-size:0.72rem;font-weight:600;color:#3fb950;padding:3px 10px;
+      border-radius:100px;background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.25);
+      display:flex;align-items:center;gap:5px;
+    }
+    .nav-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#3fb950;animation:blink 2s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    .btn-nav{
+      padding:0.45rem 1.1rem;border-radius:9px;font-size:0.84rem;font-weight:700;
+      background:var(--grad);color:#fff;border:none;cursor:pointer;text-decoration:none;
+      box-shadow:0 0 20px rgba(58,171,255,0.3);transition:all 0.2s;white-space:nowrap;
+    }
+    .btn-nav:hover{transform:translateY(-1px);box-shadow:0 0 32px rgba(58,171,255,0.5)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;z-index:10}
+    .burger span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px;transition:all 0.3s}
+
+    /* ═══ HERO ═══ */
+    #hero{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      text-align:center;padding:80px max(24px,5%) 60px;
+      position:relative;overflow:hidden;
+    }
+    .hero-orb{position:absolute;pointer-events:none;border-radius:50%;filter:blur(80px)}
+    .orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(58,171,255,0.14),transparent 70%);top:-15%;left:50%;transform:translateX(-50%)}
+    .orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(124,63,255,0.12),transparent 70%);top:30%;left:-10%}
+    .orb3{width:400px;height:400px;background:radial-gradient(circle,rgba(255,58,140,0.08),transparent 70%);top:20%;right:-5%}
+
+    .hero-inner{position:relative;z-index:1;max-width:960px;margin:0 auto}
+
+    .hero-announce{
+      display:inline-flex;align-items:center;gap:0.5rem;
+      padding:0.3rem 0.5rem 0.3rem 0.4rem;border-radius:100px;
+      border:1px solid rgba(58,171,255,0.25);
+      background:rgba(58,171,255,0.07);
+      font-size:0.78rem;font-weight:600;margin-bottom:2rem;cursor:pointer;
+      transition:border-color 0.2s,background 0.2s;
+      animation:fadeDown 0.8s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .hero-announce:hover{border-color:rgba(58,171,255,0.5);background:rgba(58,171,255,0.12)}
+    .announce-pill{
+      background:var(--grad);color:#fff;font-size:0.68rem;font-weight:800;
+      padding:2px 8px;border-radius:100px;letter-spacing:0.04em;text-transform:uppercase;
+    }
+    .announce-text{color:var(--muted2)}
+    .announce-arrow{color:var(--a1);font-size:0.8rem}
+
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    .hero-h1{
+      font-size:clamp(2.1rem,5.2vw,4rem);font-weight:900;letter-spacing:-0.045em;line-height:1.08;
+      margin-bottom:1.5rem;
+      animation:fadeUp 0.9s 0.15s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .hero-h1 .line2{
+      display:block;
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      position:relative;
+    }
+    .hero-h1 .line2::after{
+      content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;
+      background:var(--grad);opacity:0.3;border-radius:2px;
+    }
+    .hero-sub{
+      font-size:clamp(1rem,1.8vw,1.175rem);color:var(--muted2);
+      max-width:560px;margin:0 auto 2.5rem;font-weight:400;line-height:1.75;
+      animation:fadeUp 0.9s 0.3s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .hero-ctas{
+      display:flex;gap:0.875rem;justify-content:center;flex-wrap:wrap;
+      animation:fadeUp 0.9s 0.45s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .btn-hero-primary{
+      padding:0.9rem 2rem;border-radius:12px;font-size:0.975rem;font-weight:700;
+      background:var(--grad);color:#fff;border:none;cursor:pointer;text-decoration:none;
+      display:inline-flex;align-items:center;gap:0.5rem;
+      box-shadow:0 0 0 1px rgba(58,171,255,0.3), 0 8px 32px rgba(58,171,255,0.35);
+      transition:all 0.25s;position:relative;overflow:hidden;
+    }
+    .btn-hero-primary::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);
+      opacity:0;transition:opacity 0.2s;
+    }
+    .btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(58,171,255,0.5), 0 12px 48px rgba(58,171,255,0.5)}
+    .btn-hero-primary:hover::before{opacity:1}
+    .btn-hero-ghost{
+      padding:0.9rem 2rem;border-radius:12px;font-size:0.975rem;font-weight:600;
+      background:rgba(255,255,255,0.04);color:var(--text);
+      border:1px solid var(--border2);cursor:pointer;text-decoration:none;
+      display:inline-flex;align-items:center;gap:0.5rem;
+      transition:all 0.25s;backdrop-filter:blur(8px);
+    }
+    .btn-hero-ghost:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);transform:translateY(-2px)}
+
+    .hero-trust{
+      display:flex;align-items:center;justify-content:center;gap:1.25rem;
+      margin-top:1.75rem;font-size:0.8rem;color:var(--muted);flex-wrap:wrap;
+      animation:fadeUp 0.9s 0.6s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .trust-item{display:flex;align-items:center;gap:0.375rem}
+    .trust-sep{color:var(--border2)}
+
+    /* Stats belt */
+    .hero-metrics{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+      background:var(--border);border:1px solid var(--border);border-radius:20px;
+      overflow:hidden;margin-top:5rem;
+      animation:fadeUp 0.9s 0.7s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .metric{
+      background:var(--bg2);padding:1.75rem 1.5rem;text-align:center;
+      transition:background 0.3s;
+    }
+    .metric:hover{background:var(--bg3)}
+    .metric-val{
+      font-size:2.25rem;font-weight:900;letter-spacing:-0.04em;line-height:1;
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+      margin-bottom:0.4rem;
+    }
+    .metric-label{font-size:0.78rem;color:var(--muted);font-weight:500}
+
+    /* ═══ TICKER ═══ */
+    .ticker-section{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px 0;background:var(--bg2);position:relative}
+    .ticker-section::before,.ticker-section::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none}
+    .ticker-section::before{left:0;background:linear-gradient(to right,var(--bg2),transparent)}
+    .ticker-section::after{right:0;background:linear-gradient(to left,var(--bg2),transparent)}
+    .ticker-track{display:flex;gap:0;white-space:nowrap;animation:ticker 30s linear infinite}
+    .ticker-track:hover{animation-play-state:paused}
+    .ticker-item{display:inline-flex;align-items:center;gap:0.6rem;padding:0 2rem;font-size:0.8rem;font-weight:500;color:var(--muted2)}
+    .t-star{color:var(--a1);font-size:0.7rem}
+    @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+    /* ═══ SECTIONS ═══ */
+    section{padding:80px max(24px,5%);position:relative}
+    .sec-label{
+      display:inline-flex;align-items:center;gap:0.5rem;
+      font-size:0.72rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;
+      color:var(--a1);margin-bottom:1rem;
+    }
+    .sec-label::before{content:'';width:16px;height:1px;background:var(--a1)}
+    h2.sec-title{font-size:clamp(1.65rem,3.2vw,2.5rem);font-weight:900;letter-spacing:-0.035em;line-height:1.1;margin-bottom:0.875rem}
+    .grad-text{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sec-sub{color:var(--muted2);font-size:1.05rem;max-width:500px;line-height:1.75}
+    .center{text-align:center}.center .sec-sub{margin:0 auto}
+
+    /* ═══ SERVICES ═══ */
+    #services{background:var(--bg)}
+    .services-top{margin-bottom:2.75rem}
+    .services-grid{
+      display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+      background:var(--border);border:1px solid var(--border);border-radius:var(--radius2);overflow:hidden;
+    }
+    .svc{
+      background:var(--bg2);padding:1.75rem 2rem;position:relative;overflow:hidden;cursor:pointer;
+      transition:background 0.3s;
+    }
+    .svc:hover{background:#111820}
+    .svc-glow{
+      position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;
+      background:radial-gradient(circle,var(--glow1),transparent 70%);
+      opacity:0;transition:opacity 0.4s;pointer-events:none;
+    }
+    .svc:hover .svc-glow{opacity:1}
+    .svc-num{
+      font-size:0.68rem;font-weight:800;letter-spacing:0.1em;color:var(--muted);
+      margin-bottom:1rem;font-variant-numeric:tabular-nums;
+    }
+    .svc-icon{
+      width:44px;height:44px;border-radius:11px;
+      background:linear-gradient(135deg,rgba(58,171,255,0.12),rgba(124,63,255,0.12));
+      border:1px solid rgba(58,171,255,0.15);
+      display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+      margin-bottom:1rem;transition:transform 0.3s,box-shadow 0.3s;
+    }
+    .svc:hover .svc-icon{transform:scale(1.08);box-shadow:0 0 24px var(--glow1)}
+    .svc-name{font-size:1.05rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.02em}
+    .svc-desc{
+      color:var(--muted2);font-size:0.84rem;line-height:1.6;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    }
+    .svc-tags{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.875rem}
+    .svc-tag{font-size:0.68rem;font-weight:600;padding:2px 9px;border-radius:100px;background:rgba(58,171,255,0.08);border:1px solid rgba(58,171,255,0.15);color:var(--a1)}
+    .svc-link{
+      display:inline-flex;align-items:center;gap:0.375rem;
+      font-size:0.8rem;font-weight:700;color:var(--a1);
+      margin-top:1rem;opacity:0;transform:translateX(-8px);
+      transition:opacity 0.3s,transform 0.3s,gap 0.2s;
+    }
+    .svc:hover .svc-link{opacity:1;transform:translateX(0)}
+    .svc:hover .svc-link:hover{gap:0.625rem}
+
+    /* featured service — spans 2 cols */
+    .svc.featured{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+    .svc.featured .svc-visual{display:flex;align-items:center;justify-content:flex-end}
+    .conversion-widget{
+      width:280px;background:var(--bg3);border:1px solid var(--border);border-radius:16px;
+      padding:1.25rem;flex-shrink:0;
+    }
+    .cw-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .cw-title{font-size:0.8rem;font-weight:700}
+    .cw-badge{font-size:0.65rem;color:#3fb950;background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.2);padding:2px 8px;border-radius:100px;font-weight:600}
+    .cw-bars{display:flex;flex-direction:column;gap:0.625rem}
+    .cw-bar-row{display:flex;align-items:center;gap:0.75rem}
+    .cw-bar-label{font-size:0.7rem;color:var(--muted);width:60px;flex-shrink:0}
+    .cw-bar-track{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+    .cw-bar-fill{height:100%;border-radius:3px;background:var(--grad)}
+    .cw-bar-val{font-size:0.7rem;font-weight:700;color:var(--text);width:32px;text-align:right}
+    .cw-footer{margin-top:1rem;padding-top:0.875rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .cw-score{font-size:1.4rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .cw-score-label{font-size:0.7rem;color:var(--muted)}
+
+    /* ═══ PROJECTS ═══ */
+    #projects{background:var(--bg2)}
+    .projects-header{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap;margin-bottom:3.5rem}
+    .projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+
+    .proj{
+      border-radius:var(--radius2);overflow:hidden;border:1px solid var(--border);
+      background:var(--bg3);cursor:pointer;
+      transition:transform 0.4s cubic-bezier(.25,.8,.25,1),border-color 0.3s,box-shadow 0.4s;
+      position:relative;
+    }
+    .proj::before{content:'';position:absolute;inset:0;border-radius:var(--radius2);border:1px solid transparent;background:var(--grad) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;opacity:0;transition:opacity 0.4s;z-index:1;pointer-events:none}
+    .proj:hover{transform:translateY(-10px);box-shadow:0 30px 70px rgba(0,0,0,0.5),0 0 50px var(--glow1)}
+    .proj:hover::before{opacity:1}
+
+    .proj-screen{aspect-ratio:16/10;overflow:hidden;position:relative;background:#0a0e16}
+
+    /* ── Real screenshot screens ─────────────────────────── */
+    .screen-real{width:100%;height:100%;display:flex;flex-direction:column;background:#090d15}
+    .screen-real .screen-nav{border-bottom:1px solid rgba(255,255,255,0.07)}
+    .screen-img{
+      flex:1;width:100%;object-fit:cover;object-position:top center;
+      display:block;transition:transform 6s ease;
+    }
+    .proj:hover .screen-img{transform:translateY(-6%)}
+
+    /* Salon screen */
+    .screen-salon{width:100%;height:100%;background:linear-gradient(160deg,#1a0e2e,#0f0820);display:flex;flex-direction:column;padding:0}
+    .screen-nav{height:36px;background:rgba(0,0,0,0.3);display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.05)}
+    .scr-dot{width:8px;height:8px;border-radius:50%}
+    .scr-dot.r{background:#FF5F57}.scr-dot.y{background:#FFBD2E}.scr-dot.g{background:#28C840}
+    .scr-url{flex:1;height:14px;background:rgba(255,255,255,0.06);border-radius:3px;margin:0 8px}
+    .screen-body{flex:1;display:flex;flex-direction:column;padding:16px;gap:10px;overflow:hidden}
+    .s-hero-area{flex:1;border-radius:10px;background:linear-gradient(135deg,#2d1b4e,#5a1b6e);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+    .s-hero-area::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 40% 50%,rgba(180,100,255,0.35),transparent 65%)}
+    .s-hero-label{font-size:0.55rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.5);position:relative;z-index:1}
+    .s-hero-title{font-size:0.85rem;font-weight:900;color:#fff;text-align:center;position:relative;z-index:1}
+    .s-hero-btn{width:60px;height:14px;border-radius:4px;background:linear-gradient(90deg,#c56aff,#ff6ad0);position:relative;z-index:1}
+    .s-cards{display:flex;gap:8px;flex-shrink:0}
+    .s-card{flex:1;height:36px;background:rgba(180,100,255,0.08);border:1px solid rgba(180,100,255,0.2);border-radius:8px}
+
+    /* Resto screen */
+    .screen-resto{width:100%;height:100%;background:linear-gradient(160deg,#160a00,#0f0a04);display:flex;flex-direction:column}
+    .r-body{flex:1;display:flex;flex-direction:column;padding:16px;gap:10px;overflow:hidden}
+    .r-hero{flex:1;border-radius:10px;background:linear-gradient(135deg,#3d2000,#7a3a00);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+    .r-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(255,140,0,0.3),transparent 65%)}
+    .r-hero-title{font-size:0.85rem;font-weight:900;color:#fff;text-align:center;position:relative;z-index:1}
+    .r-hero-sub{font-size:0.55rem;color:rgba(255,200,100,0.7);position:relative;z-index:1}
+    .r-hero-btn{width:60px;height:14px;border-radius:4px;background:linear-gradient(90deg,#ff9500,#ff5500);position:relative;z-index:1}
+    .r-grid{display:flex;gap:8px;flex-shrink:0}
+    .r-item{flex:1;height:40px;background:rgba(255,140,0,0.07);border:1px solid rgba(255,140,0,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center}
+    .r-item-dot{width:18px;height:18px;border-radius:4px;background:rgba(255,140,0,0.2)}
+
+    /* Biz screen */
+    .screen-biz{width:100%;height:100%;background:linear-gradient(160deg,#070e1a,#030a12);display:flex;flex-direction:column}
+    .b-body{flex:1;display:flex;flex-direction:column;padding:16px;gap:10px;overflow:hidden}
+    .b-hero{flex:1;border-radius:10px;background:linear-gradient(135deg,#051830,#0a2a4a);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+    .b-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(58,171,255,0.25),transparent 65%)}
+    .b-hero-title{font-size:0.85rem;font-weight:900;color:#fff;text-align:center;position:relative;z-index:1}
+    .b-hero-sub{font-size:0.55rem;color:rgba(100,180,255,0.7);position:relative;z-index:1}
+    .b-hero-btn{width:60px;height:14px;border-radius:4px;background:var(--grad);position:relative;z-index:1}
+    .b-row{display:flex;gap:8px;flex-shrink:0}
+    .b-card{height:40px;background:rgba(58,171,255,0.06);border:1px solid rgba(58,171,255,0.15);border-radius:8px}
+
+    .proj-info{padding:1.5rem 1.75rem 1.75rem}
+    .proj-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.625rem}
+    .proj-cat{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--a1)}
+    .proj-result{font-size:0.7rem;font-weight:700;color:var(--a1);background:rgba(58,171,255,0.08);border:1px solid rgba(58,171,255,0.2);padding:2px 8px;border-radius:100px}
+    .proj-name{font-size:1.1rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.02em}
+    .proj-desc{color:var(--muted2);font-size:0.85rem;line-height:1.65}
+    .proj-chips{display:flex;align-items:center;justify-content:space-between;margin-top:1.1rem;padding-top:1rem;border-top:1px solid var(--border)}
+    .proj-cta{font-size:0.8rem;font-weight:700;color:var(--a1);display:flex;align-items:center;gap:0.35rem;transition:gap 0.2s}
+    .proj:hover .proj-cta{gap:0.6rem}
+    .proj-eye{font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:0.3rem}
+
+    /* ═══ SOCIAL PROOF ═══ */
+    #proof{background:var(--bg);padding:80px max(24px,5%)}
+    .proof-header{text-align:center;margin-bottom:3rem}
+    .proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+    .testimonial{
+      background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);
+      padding:2rem;transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;
+    }
+    .testimonial:hover{border-color:rgba(58,171,255,0.2);transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,0.35)}
+    .stars{display:flex;gap:3px;margin-bottom:1.25rem}
+    .stars span{color:#f59e0b;font-size:0.85rem}
+    .test-text{font-size:0.9rem;line-height:1.75;color:var(--muted2);margin-bottom:1.5rem;font-style:italic}
+    .test-author{display:flex;align-items:center;gap:0.75rem}
+    .test-avatar{width:38px;height:38px;border-radius:50%;font-size:0.9rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+    .av1{background:linear-gradient(135deg,#c56aff,#ff6ad0)}
+    .av2{background:linear-gradient(135deg,#ff9500,#ff5500)}
+    .av3{background:var(--grad)}
+    .test-name{font-size:0.875rem;font-weight:700}
+    .test-role{font-size:0.75rem;color:var(--muted)}
+
+    /* ═══ PROCESS ═══ */
+    #process{background:var(--bg2)}
+    .process-wrap{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+    .process-steps{margin-top:2.5rem;display:flex;flex-direction:column;gap:0}
+    .pstep{
+      display:flex;gap:1.5rem;padding:1.75rem 0;
+      border-bottom:1px solid var(--border);position:relative;
+      transition:all 0.3s;cursor:pointer;
+    }
+    .pstep:last-child{border-bottom:none}
+    .pstep.active{padding-left:1rem;border-left:2px solid var(--a1);margin-left:-1rem}
+    .pstep-num{font-size:0.7rem;font-weight:900;color:var(--a1);min-width:24px;margin-top:3px;letter-spacing:0.05em}
+    .pstep-content{flex:1}
+    .pstep-name{font-size:1rem;font-weight:800;margin-bottom:0.35rem;letter-spacing:-0.01em}
+    .pstep-desc{color:var(--muted2);font-size:0.875rem;line-height:1.65}
+    .pstep-time{font-size:0.72rem;color:var(--a1);font-weight:600;margin-top:0.5rem}
+
+    .process-card{
+      background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);
+      padding:1.75rem;position:relative;overflow:hidden;
+    }
+    .process-card::before{content:'';position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:radial-gradient(circle,rgba(58,171,255,0.1),transparent 65%)}
+    .process-card::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(124,63,255,0.1),transparent 65%)}
+    .pc-header{display:flex;align-items:center;gap:0.875rem;margin-bottom:1.5rem;position:relative;z-index:1}
+    .pc-logo{width:38px;height:38px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:900;color:#fff;box-shadow:0 0 16px var(--glow1)}
+    .pc-title{font-size:0.875rem;font-weight:700}
+    .pc-sub{font-size:0.72rem;color:var(--muted)}
+    .pc-progress{margin-bottom:1.25rem;position:relative;z-index:1}
+    .pc-prog-label{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-bottom:6px}
+    .pc-prog-label span:last-child{color:var(--a1);font-weight:700}
+    .pc-prog-bar{height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+    .pc-prog-fill{height:100%;width:72%;background:var(--grad);border-radius:3px;position:relative}
+    .pc-prog-fill::after{content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);width:10px;height:10px;background:#fff;border-radius:50%;border:2px solid var(--a1);box-shadow:0 0 8px var(--glow1)}
+    .pc-tasks{display:flex;flex-direction:column;gap:0.5rem;position:relative;z-index:1}
+    .pc-task{
+      display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;
+      background:var(--bg2);border-radius:10px;border:1px solid var(--border);
+      transition:border-color 0.2s;
+    }
+    .pc-task:hover{border-color:rgba(58,171,255,0.2)}
+    .pc-task-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .done-dot{background:#3fb950;box-shadow:0 0 6px rgba(63,185,80,0.5)}
+    .active-dot{background:var(--a1);box-shadow:0 0 8px var(--glow1);animation:blink 1.5s infinite}
+    .pending-dot{background:#2a3040}
+    .pc-task-label{font-size:0.8rem;font-weight:500;flex:1}
+    .pc-task-time{font-size:0.68rem;color:var(--muted)}
+    .pc-task-check{color:#3fb950;font-size:0.8rem}
+
+    /* ═══ LOCAL BUSINESSES ═══ */
+    #local{background:var(--bg2)}
+    .local-inner{
+      display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;
+    }
+    .local-left .sec-label{margin-bottom:1rem;display:inline-block}
+    .local-left .sec-title{margin-bottom:1.25rem}
+    .local-lead{color:var(--muted2);font-size:1rem;line-height:1.8;margin-bottom:2rem}
+    .local-targets{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:2.5rem}
+    .local-tag{
+      font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+      padding:5px 14px;border-radius:100px;
+      border:1px solid var(--border2);color:var(--muted2);
+      transition:border-color 0.2s,color 0.2s;
+    }
+    .local-tag:hover{border-color:var(--a1);color:var(--a1)}
+    .local-reasons{display:grid;grid-template-columns:1fr 1fr;gap:0.875rem}
+    .local-reason{
+      background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+      padding:1.25rem 1.35rem;position:relative;overflow:hidden;
+      transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;
+    }
+    .local-reason:hover{
+      border-color:rgba(58,171,255,0.22);transform:translateY(-4px);
+      box-shadow:0 16px 40px rgba(0,0,0,0.35),0 0 20px var(--glow1);
+    }
+    .local-reason-glow{
+      position:absolute;top:0;left:0;right:0;height:2px;
+      background:var(--grad);opacity:0;transition:opacity 0.3s;
+    }
+    .local-reason:hover .local-reason-glow{opacity:1}
+    .local-reason-icon{
+      width:42px;height:42px;border-radius:11px;margin-bottom:1rem;
+      display:flex;align-items:center;justify-content:center;font-size:1.15rem;
+      background:linear-gradient(135deg,rgba(58,171,255,0.1),rgba(124,63,255,0.1));
+      border:1px solid rgba(58,171,255,0.15);
+    }
+    .local-reason-title{font-size:0.95rem;font-weight:800;margin-bottom:0.35rem;letter-spacing:-0.02em}
+    .local-reason-desc{font-size:0.82rem;color:var(--muted2);line-height:1.65}
+    .local-stat{
+      font-size:0.75rem;font-weight:700;color:var(--a1);
+      margin-top:0.75rem;padding-top:0.75rem;
+      border-top:1px solid var(--border);
+      display:flex;align-items:center;gap:0.4rem;
+    }
+    .local-stat::before{content:'→';opacity:0.7}
+    /* right panel — urgency card */
+    .local-right{position:relative}
+    .urgency-card{
+      background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);
+      padding:2rem 2.25rem;position:relative;overflow:hidden;
+    }
+    .urgency-card::before{
+      content:'';position:absolute;top:-80px;right:-80px;width:260px;height:260px;
+      background:radial-gradient(circle,rgba(124,63,255,0.14),transparent 70%);
+    }
+    .urgency-card::after{
+      content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;
+      background:radial-gradient(circle,rgba(58,171,255,0.1),transparent 70%);
+    }
+    .urgency-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.75rem;position:relative;z-index:1}
+    .urgency-dot{width:8px;height:8px;border-radius:50%;background:#3fb950;box-shadow:0 0 8px rgba(63,185,80,0.6);animation:blink 1.5s infinite;flex-shrink:0}
+    .urgency-headline{font-size:0.78rem;font-weight:700;color:var(--muted2)}
+    .urgency-question{
+      font-size:1.35rem;font-weight:900;letter-spacing:-0.03em;line-height:1.25;
+      margin-bottom:1.5rem;position:relative;z-index:1;
+    }
+    .urgency-list{list-style:none;display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.75rem;position:relative;z-index:1}
+    .urgency-list li{
+      display:flex;align-items:flex-start;gap:0.75rem;
+      font-size:0.875rem;color:var(--muted2);line-height:1.5;
+    }
+    .urgency-check{
+      width:20px;height:20px;border-radius:6px;flex-shrink:0;margin-top:1px;
+      background:linear-gradient(135deg,rgba(58,171,255,0.15),rgba(124,63,255,0.15));
+      border:1px solid rgba(58,171,255,0.25);
+      display:flex;align-items:center;justify-content:center;
+      font-size:0.7rem;color:var(--a1);
+    }
+    .urgency-cta{
+      display:flex;flex-direction:column;gap:0.75rem;position:relative;z-index:1;
+    }
+    .urgency-note{font-size:0.74rem;color:var(--muted);text-align:center}
+    .competitors-lost{
+      margin-top:1.5rem;padding:1rem 1.25rem;
+      background:rgba(255,58,140,0.06);border:1px solid rgba(255,58,140,0.14);
+      border-radius:var(--radius);position:relative;z-index:1;
+    }
+    .comp-label{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--a3);margin-bottom:0.5rem}
+    .comp-text{font-size:0.82rem;color:var(--muted2);line-height:1.6}
+    @media(max-width:900px){
+      .local-inner{grid-template-columns:1fr;gap:2.5rem}
+      .local-reasons{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:600px){
+      .local-reasons{grid-template-columns:1fr}
+    }
+
+    /* ═══ PROCESS (new grid layout) ═══ */
+    #process{background:var(--bg2)}
+    .process-grid{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
+      position:relative;
+    }
+    .process-step-card{
+      background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);
+      padding:2rem 1.75rem;position:relative;overflow:hidden;
+      transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s;
+    }
+    .process-step-card:hover{
+      transform:translateY(-6px);border-color:rgba(58,171,255,0.22);
+      box-shadow:0 20px 50px rgba(0,0,0,0.4),0 0 24px var(--glow1);
+    }
+    /* Connector line between cards */
+    .ps-connector{
+      position:absolute;top:3.5rem;right:-0.75rem;
+      width:1.5rem;height:1px;
+      background:linear-gradient(90deg,var(--border2),transparent);
+      z-index:2;
+    }
+    .ps-num-wrap{margin-bottom:1.25rem}
+    .ps-num{
+      font-size:0.68rem;font-weight:900;letter-spacing:0.12em;
+      background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .ps-icon-bg{
+      width:68px;height:68px;border-radius:18px;margin-bottom:1.5rem;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,rgba(58,171,255,0.1),rgba(124,63,255,0.1));
+      border:1px solid rgba(58,171,255,0.18);
+      transition:border-color 0.3s,box-shadow 0.3s;
+    }
+    .process-step-card:hover .ps-icon-bg{
+      border-color:rgba(58,171,255,0.35);
+      box-shadow:0 0 20px rgba(58,171,255,0.15);
+    }
+    .ps-tag{font-size:0.7rem;font-weight:700;color:var(--a1);margin-bottom:0.6rem;letter-spacing:0.04em}
+    .ps-title{font-size:1rem;font-weight:800;margin-bottom:0.5rem;letter-spacing:-0.02em}
+    .ps-desc{font-size:0.84rem;color:var(--muted2);line-height:1.7}
+    @media(max-width:900px){
+      .process-grid{grid-template-columns:1fr 1fr}
+      .ps-connector{display:none}
+    }
+    @media(max-width:540px){
+      .process-grid{grid-template-columns:1fr}
+    }
+
+    /* ═══ PROJECT MODAL ═══ */
+    .proj{cursor:pointer}
+    #proj-modal{
+      display:none;position:fixed;inset:0;z-index:9000;
+      background:rgba(4,7,14,0.92);backdrop-filter:blur(12px);
+      align-items:center;justify-content:center;padding:1.5rem;
+    }
+    #proj-modal.open{display:flex}
+    .modal-box{
+      background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius2);
+      width:100%;max-width:900px;max-height:90vh;overflow:hidden;
+      display:flex;flex-direction:column;position:relative;
+      animation:modalIn 0.3s cubic-bezier(.25,.8,.25,1);
+    }
+    @keyframes modalIn{from{opacity:0;transform:scale(0.95) translateY(16px)}to{opacity:1;transform:none}}
+    .modal-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);flex-shrink:0;
+    }
+    .modal-title{font-size:1rem;font-weight:800;letter-spacing:-0.02em}
+    .modal-cat{font-size:0.72rem;color:var(--muted);margin-top:2px}
+    .modal-close{
+      width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+      background:transparent;color:var(--muted2);cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+      transition:background 0.2s,color 0.2s;
+    }
+    .modal-close:hover{background:var(--bg4);color:var(--text)}
+    .modal-gallery{
+      flex:1;overflow-y:auto;padding:1.25rem;
+      display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;
+    }
+    .modal-gallery img{
+      width:100%;border-radius:12px;border:1px solid var(--border);
+      object-fit:cover;transition:transform 0.3s,box-shadow 0.3s;cursor:zoom-in;
+    }
+    .modal-gallery img:hover{transform:scale(1.02);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+    .modal-gallery img.full{grid-column:1/-1}
+    .modal-footer{
+      padding:1rem 1.5rem;border-top:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+    }
+    .modal-chips{display:flex;gap:0.5rem;flex-wrap:wrap}
+    @media(max-width:600px){
+      .modal-gallery{grid-template-columns:1fr}
+      .modal-gallery img.full{grid-column:1}
+    }
+
+    /* ═══ WHY ═══ */
+    #why{background:var(--bg);scroll-margin-top:70px}
+    .why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:3.5rem}
+    .why-card{
+      background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);
+      padding:2rem 1.75rem;position:relative;overflow:hidden;
+      transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s;
+    }
+    .why-card:hover{transform:translateY(-6px);border-color:rgba(58,171,255,0.2);box-shadow:0 20px 50px rgba(0,0,0,0.4),0 0 30px var(--glow1)}
+    .why-top-border{
+      position:absolute;top:0;left:0;right:0;height:2px;
+      background:var(--grad);opacity:0;transition:opacity 0.3s;
+    }
+    .why-card:hover .why-top-border{opacity:1}
+    .why-icon{width:48px;height:48px;border-radius:13px;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:linear-gradient(135deg,rgba(58,171,255,0.12),rgba(124,63,255,0.12));border:1px solid rgba(58,171,255,0.18)}
+    .why-title{font-size:1.05rem;font-weight:800;margin-bottom:0.5rem;letter-spacing:-0.02em}
+    .why-desc{color:var(--muted2);font-size:0.875rem;line-height:1.7}
+    .why-metric{font-size:0.78rem;font-weight:700;color:var(--a1);margin-top:1rem;display:flex;align-items:center;gap:0.375rem}
+    .why-metric::before{content:'↑';font-size:0.8rem}
+
+    /* ═══ OFFER / CTA BAND ═══ */
+    #offer{background:var(--bg2);padding:80px max(24px,5%)}
+    .offer-inner{
+      background:var(--bg3);border:1px solid var(--border);border-radius:28px;
+      padding:3.5rem 4rem;display:flex;align-items:center;gap:4rem;
+      position:relative;overflow:hidden;
+    }
+    .offer-inner::before{
+      content:'';position:absolute;top:-100px;left:-100px;width:400px;height:400px;
+      background:radial-gradient(circle,rgba(58,171,255,0.1),transparent 70%);
+    }
+    .offer-inner::after{
+      content:'';position:absolute;bottom:-80px;right:-80px;width:300px;height:300px;
+      background:radial-gradient(circle,rgba(124,63,255,0.12),transparent 70%);
+    }
+    .offer-text{flex:1;position:relative;z-index:1}
+    .offer-tag{font-size:0.72rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--a3);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+    .offer-tag::before{content:'';width:16px;height:1px;background:var(--a3)}
+    .offer-h{font-size:clamp(1.6rem,3vw,2.5rem);font-weight:900;letter-spacing:-0.035em;line-height:1.1;margin-bottom:1rem}
+    .offer-sub{color:var(--muted2);font-size:0.95rem;line-height:1.75}
+    .offer-ctas{display:flex;gap:0.875rem;flex-wrap:wrap;margin-top:2rem;position:relative;z-index:1}
+    .offer-slots{
+      display:flex;align-items:center;gap:0.75rem;margin-top:1.25rem;
+      font-size:0.8rem;color:var(--muted2);position:relative;z-index:1;
+    }
+    .slots-bar{display:flex;gap:3px}
+    .slot-dot{width:8px;height:8px;border-radius:2px;background:var(--grad)}
+    .slot-dot.empty{background:#2a3040}
+    .offer-guarantee{
+      flex-shrink:0;background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+      padding:2rem;text-align:center;min-width:220px;position:relative;z-index:1;
+    }
+    .guarantee-icon{font-size:2.5rem;margin-bottom:0.75rem}
+    .guarantee-title{font-size:0.875rem;font-weight:800;margin-bottom:0.375rem}
+    .guarantee-sub{font-size:0.78rem;color:var(--muted2);line-height:1.5}
+
+    /* ═══ CONTACT ═══ */
+    #contact{background:var(--bg);padding:110px max(24px,5%)}
+    .contact-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:5rem;align-items:start}
+    .contact-left{}
+    .contact-channels{margin-top:2.5rem;display:flex;flex-direction:column;gap:0.75rem}
+    .ch-btn{
+      display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;
+      border-radius:14px;background:var(--bg2);border:1px solid var(--border);
+      color:var(--text);text-decoration:none;font-weight:600;font-size:0.9rem;
+      transition:all 0.2s;
+    }
+    .ch-btn:hover{border-color:rgba(58,171,255,0.3);background:var(--bg3);transform:translateX(5px)}
+    .ch-icon{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+    .ch-icon.wa{background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.2)}
+    .ch-icon.em{background:rgba(58,171,255,0.1);border:1px solid rgba(58,171,255,0.2)}
+    .ch-detail{display:flex;flex-direction:column;gap:2px}
+    .ch-label{font-size:0.72rem;color:var(--muted);font-weight:400}
+    .contact-trust{display:flex;gap:1.5rem;margin-top:2rem;flex-wrap:wrap}
+    .ctrust-item{display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:var(--muted2)}
+    .ctrust-item svg{flex-shrink:0}
+
+    .contact-form-box{
+      background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius2);
+      padding:2.5rem;position:relative;overflow:hidden;
+    }
+    .contact-form-box::before{content:'';position:absolute;top:-80px;right:-80px;width:250px;height:250px;background:radial-gradient(circle,rgba(124,63,255,0.1),transparent 65%)}
+    .form-hed{font-size:1.25rem;font-weight:800;margin-bottom:0.375rem;letter-spacing:-0.02em}
+    .form-sub-text{color:var(--muted2);font-size:0.85rem;margin-bottom:1.75rem}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .fg{display:flex;flex-direction:column;gap:0.425rem;margin-bottom:0.875rem;position:relative;z-index:1}
+    .fg label{font-size:0.78rem;font-weight:600;color:var(--muted2)}
+    .fg input,.fg textarea,.fg select{
+      background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+      color:var(--text);font-family:inherit;font-size:0.875rem;padding:0.75rem 1rem;
+      outline:none;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical;
+      -webkit-appearance:none;appearance:none;
+    }
+    .fg input::placeholder,.fg textarea::placeholder{color:#3a414e}
+    .fg input:focus,.fg textarea:focus,.fg select:focus{
+      border-color:rgba(58,171,255,0.45);
+      box-shadow:0 0 0 3px rgba(58,171,255,0.09);
+    }
+    .fg select option{background:#141b27}
+    .form-submit{
+      width:100%;padding:0.9rem;border-radius:11px;background:var(--grad);color:#fff;border:none;
+      cursor:pointer;font-family:inherit;font-size:0.95rem;font-weight:800;margin-top:0.5rem;
+      position:relative;z-index:1;box-shadow:0 0 24px rgba(58,171,255,0.3);
+      transition:all 0.25s;display:flex;align-items:center;justify-content:center;gap:0.5rem;
+    }
+    .form-submit:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(58,171,255,0.45)}
+    .form-note{text-align:center;font-size:0.75rem;color:var(--muted);margin-top:0.875rem;position:relative;z-index:1}
+    .form-success{
+      display:none;text-align:center;padding:3rem 1.5rem;
+      position:relative;z-index:1;
+      animation:fadeUp 0.5s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .success-circle{
+      width:72px;height:72px;border-radius:50%;margin:0 auto 1.5rem;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg,rgba(58,171,255,0.12),rgba(124,63,255,0.12));
+      border:1px solid rgba(58,171,255,0.25);
+      box-shadow:0 0 32px rgba(58,171,255,0.15);
+    }
+    .success-circle svg{width:32px;height:32px}
+    .form-success h3{
+      font-size:1.35rem;font-weight:900;letter-spacing:-0.03em;
+      margin-bottom:0.75rem;
+    }
+    .form-success .success-main{
+      color:var(--text);font-size:0.95rem;line-height:1.7;margin-bottom:0.5rem;
+    }
+    .form-success .success-sub{
+      color:var(--muted);font-size:0.82rem;line-height:1.6;margin-bottom:2rem;
+    }
+    .success-divider{
+      width:48px;height:2px;margin:1.25rem auto;
+      background:var(--grad);border-radius:2px;opacity:0.6;
+    }
+
+    /* ═══ FOOTER ═══ */
+    footer{background:var(--bg2);border-top:1px solid var(--border);padding:3.5rem max(24px,5%);text-align:center}
+    .footer-logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:0.5rem}
+    .footer-logo-mark{width:38px;height:38px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 12px rgba(58,171,255,0.5))}
+    .footer-logo-text{font-size:1.4rem;font-weight:900;letter-spacing:-0.03em;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .footer-tagline{color:var(--muted);font-size:0.85rem;margin-bottom:2rem}
+    .footer-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+    .footer-links a{color:var(--muted);text-decoration:none;font-size:0.85rem;transition:color 0.2s}
+    .footer-links a:hover{color:var(--text)}
+    .footer-copy{color:#2d3545;font-size:0.78rem}
+
+    /* ═══ FLOATING ELEMENTS ═══ */
+    .float-wa{
+      position:fixed;bottom:1.75rem;right:1.75rem;z-index:500;
+      width:56px;height:56px;border-radius:50%;
+      background:linear-gradient(135deg,#25D366,#128C7E);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 4px 24px rgba(37,211,102,0.45);
+      cursor:pointer;text-decoration:none;
+      transition:transform 0.25s,box-shadow 0.25s;
+      animation:floatIn 0.6s 1.5s cubic-bezier(.25,.8,.25,1) both;
+    }
+    .float-wa:hover{transform:scale(1.1);box-shadow:0 8px 40px rgba(37,211,102,0.6)}
+    .float-wa-tooltip{
+      position:absolute;right:68px;background:#1a2035;color:var(--text);
+      font-size:0.78rem;font-weight:600;padding:6px 12px;border-radius:8px;white-space:nowrap;
+      border:1px solid var(--border);pointer-events:none;
+      opacity:0;transform:translateX(4px);transition:all 0.2s;
+    }
+    .float-wa:hover .float-wa-tooltip{opacity:1;transform:translateX(0)}
+    @keyframes floatIn{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
+
+    .mobile-cta-bar{
+      display:none;position:fixed;bottom:0;left:0;right:0;z-index:499;
+      padding:0.875rem 1.25rem 1.25rem;
+      background:linear-gradient(to top,var(--bg) 70%,transparent);
+      backdrop-filter:blur(8px);
+    }
+    .mobile-cta-bar a{display:block;text-align:center;padding:0.9rem;border-radius:12px;background:var(--grad);color:#fff;font-weight:800;font-size:0.95rem;text-decoration:none;box-shadow:0 0 24px rgba(58,171,255,0.4)}
+
+    /* ═══ ANIMATIONS ═══ */
+    .reveal{opacity:0;transform:translateY(32px);transition:opacity 0.75s cubic-bezier(.25,.8,.25,1),transform 0.75s cubic-bezier(.25,.8,.25,1)}
+    .reveal.in{opacity:1;transform:translateY(0)}
+    .reveal-left{opacity:0;transform:translateX(-32px);transition:opacity 0.75s cubic-bezier(.25,.8,.25,1),transform 0.75s cubic-bezier(.25,.8,.25,1)}
+    .reveal-left.in{opacity:1;transform:translateX(0)}
+    .reveal-right{opacity:0;transform:translateX(32px);transition:opacity 0.75s cubic-bezier(.25,.8,.25,1),transform 0.75s cubic-bezier(.25,.8,.25,1)}
+    .reveal-right.in{opacity:1;transform:translateX(0)}
+    .d1{transition-delay:0.08s}.d2{transition-delay:0.18s}.d3{transition-delay:0.28s}.d4{transition-delay:0.38s}.d5{transition-delay:0.48s}.d6{transition-delay:0.58s}
+
+    /* ═══ RESPONSIVE ═══ */
+    @media(max-width:1024px){
+      .svc.featured{grid-column:span 1;grid-template-columns:1fr;gap:1.5rem}
+      .svc.featured .svc-visual{display:none}
+      .services-grid{grid-template-columns:1fr 1fr}
+      .projects-grid{grid-template-columns:1fr 1fr}
+      .proof-grid{grid-template-columns:1fr 1fr}
+      .why-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:900px){
+      .nav-center,.nav-badge{display:none}
+      .burger{display:flex}
+      .nav-center.open{
+        display:flex;flex-direction:column;
+        position:fixed;top:60px;left:0;right:0;
+        background:rgba(8,12,20,0.97);backdrop-filter:blur(20px);
+        padding:1.5rem max(24px,5%) 2rem;
+        border-bottom:1px solid var(--border);gap:0.25rem;z-index:999;
+      }
+      .nav-center.open a{font-size:1rem;padding:0.75rem 1rem}
+      .process-wrap,.contact-grid,.offer-inner{grid-template-columns:1fr;gap:2.5rem}
+      .offer-inner{padding:2.5rem 2rem}
+      .offer-guarantee{min-width:unset;width:100%}
+      .hero-metrics{grid-template-columns:repeat(2,1fr)}
+      .mobile-cta-bar{display:block}
+      body{padding-bottom:70px}
+    }
+    @media(max-width:640px){
+      section{padding:56px max(24px,5%)}
+      .projects-grid,.services-grid,.proof-grid,.why-grid{grid-template-columns:1fr}
+      .svc.featured{grid-column:span 1}
+      .frow{grid-template-columns:1fr}
+      .hero-metrics{grid-template-columns:repeat(2,1fr)}
+      .float-wa{bottom:5.5rem;right:1.25rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     LAYERED BACKGROUND SYSTEM
+     Layer 1 — Base gradient  (#bg-l1)
+     Layer 2 — Glow blobs     (#bg-l2)
+     Layer 3 — Particles      (#bg-canvas)
+══════════════════════════════════════════ -->
+<div id="bg-wrap" aria-hidden="true">
+  <div id="bg-l1"></div><!-- gradient base, parallax slow -->
+  <div id="bg-l2"><!-- single blur pass for all blobs -->
+    <div class="bg-blob bb-blue"></div>
+    <div class="bg-blob bb-purple"></div>
+    <div class="bg-blob bb-mid"></div>
+  </div>
+  <div id="bg-grid"></div><!-- CSS tech grid, slow drift -->
+  <canvas id="bg-canvas"></canvas><!-- particles -->
+  <!-- vignette lives in #bg-wrap::after — no extra div needed -->
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-mark">
+      <!-- PixelForge Logo — pixelated anvil + floating pixels, blue→purple gradient -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 70" width="32" height="28">
+        <defs>
+          <linearGradient id="pfg-nav" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#39A8FF"/>
+            <stop offset="100%" stop-color="#7B3CFF"/>
+          </linearGradient>
+        </defs>
+        <!-- Floating pixel cross (top-right — digital accent) -->
+        <rect x="51" y="2"  width="5" height="20" rx="1.5" fill="url(#pfg-nav)"/><!-- vertical -->
+        <rect x="43" y="9"  width="21" height="6" rx="1.5" fill="url(#pfg-nav)"/><!-- horizontal -->
+        <!-- Scattered pixel fragments -->
+        <rect x="37" y="2"  width="5"  height="5"  rx="1"   fill="url(#pfg-nav)" opacity="0.8"/>
+        <rect x="68" y="5"  width="4"  height="4"  rx="1"   fill="url(#pfg-nav)" opacity="0.65"/>
+        <rect x="71" y="17" width="3"  height="3"  rx="0.5" fill="url(#pfg-nav)" opacity="0.45"/>
+        <!-- ── ANVIL BODY ── -->
+        <!-- Top work surface (wide flat face) -->
+        <rect x="2"  y="28" width="52" height="12" rx="3"   fill="url(#pfg-nav)"/>
+        <!-- Horn — right-pointing triangular beak -->
+        <path d="M54 28 Q73 34 54 40 Z"             fill="url(#pfg-nav)"/>
+        <!-- Waist / neck (narrower middle) -->
+        <rect x="8"  y="40" width="38" height="8"  rx="2"   fill="url(#pfg-nav)"/>
+        <!-- Base pedestal -->
+        <rect x="2"  y="48" width="52" height="13" rx="4"   fill="url(#pfg-nav)"/>
+        <!-- Left foot -->
+        <rect x="2"  y="57" width="16" height="8"  rx="3"   fill="url(#pfg-nav)"/>
+        <!-- Right foot -->
+        <rect x="38" y="57" width="16" height="8"  rx="3"   fill="url(#pfg-nav)"/>
+      </svg>
+    </div>
+    PixelForge
+  </a>
+  <div class="nav-center" id="navLinks">
+    <a href="#services">Services</a>
+    <a href="#projects">Projets</a>
+    <a href="#process">Processus</a>
+    <a href="#why">Pourquoi nous</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-badge">Disponible</div>
+    <a href="#contact" class="btn-nav">Démarrer un projet</a>
+    <div class="burger" id="burger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+  <div class="hero-inner">
+    <div class="hero-announce">
+      <span class="announce-pill">Nouveau</span>
+      <span class="announce-text">Sites livrés en 14 jours — Offre de lancement</span>
+      <span class="announce-arrow">→</span>
+    </div>
+    <h1 class="hero-h1">
+      Des sites web qui<br>
+      <span class="line2">transforment vos visiteurs<br>en clients.</span>
+    </h1>
+    <p class="hero-sub">
+      PixelForge conçoit des expériences digitales premium, ultra-rapides et optimisées pour la conversion. Chaque pixel, chaque mot, chaque interaction — pensés pour propulser votre activité.
+    </p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-hero-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Voir nos réalisations
+      </a>
+      <a href="#contact" class="btn-hero-ghost">
+        Créer mon site gratuitement
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+    <div class="hero-trust">
+      <span class="trust-item">✓ Devis gratuit sous 24h</span>
+      <span class="trust-sep">·</span>
+      <span class="trust-item">✓ Sans engagement</span>
+      <span class="trust-sep">·</span>
+      <span class="trust-item">✓ Satisfait ou remboursé</span>
+    </div>
+    <div class="hero-metrics">
+      <div class="metric reveal d1">
+        <div class="metric-val" data-target="87" data-suffix="%">0%</div>
+        <div class="metric-label">Des clients cherchent sur Google avant de se déplacer</div>
+      </div>
+      <div class="metric reveal d2">
+        <div class="metric-val" data-target="2" data-suffix="x">0x</div>
+        <div class="metric-label">Plus de réservations avec une prise de RDV en ligne</div>
+      </div>
+      <div class="metric reveal d3">
+        <div class="metric-val" data-target="75" data-suffix="%">0%</div>
+        <div class="metric-label">Des gens jugent la crédibilité d'un commerce par son site</div>
+      </div>
+      <div class="metric reveal d4">
+        <div class="metric-val" data-target="3" data-suffix="x">0x</div>
+        <div class="metric-label">Plus de contacts pour les commerces bien référencés localement</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-section">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="t-star">✦</span> Design Premium UI/UX</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Chargement &lt; 1 seconde</span>
+    <span class="ticker-item"><span class="t-star">✦</span> SEO Optimisé Google</span>
+    <span class="ticker-item"><span class="t-star">✦</span> 100% Responsive Mobile</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Conversion maximisée</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Livraison en 14 jours</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Support inclus 3 mois</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Satisfaction garantie</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Design Premium UI/UX</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Chargement &lt; 1 seconde</span>
+    <span class="ticker-item"><span class="t-star">✦</span> SEO Optimisé Google</span>
+    <span class="ticker-item"><span class="t-star">✦</span> 100% Responsive Mobile</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Conversion maximisée</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Livraison en 14 jours</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Support inclus 3 mois</span>
+    <span class="ticker-item"><span class="t-star">✦</span> Satisfaction garantie</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-top center reveal">
+    <span class="sec-label">Nos Services</span>
+    <h2 class="sec-title">Tout ce qu'il faut pour <span class="grad-text">dominer votre marché</span></h2>
+    <p class="sec-sub center">Des solutions digitales sur-mesure pensées pour générer des résultats mesurables dès le premier mois.</p>
+  </div>
+  <div class="services-grid">
+    <div class="svc reveal d1">
+      <div class="svc-glow"></div>
+      <div class="svc-num">01</div>
+      <div class="svc-icon">🎨</div>
+      <div class="svc-name">Création de site vitrine</div>
+      <p class="svc-desc">Un site moderne qui présente votre activité, rassure vos clients et transforme vos visiteurs en prises de rendez-vous. Conçu pour les restaurants, salons et commerces locaux.</p>
+      <div class="svc-tags"><span class="svc-tag">UI/UX Design</span><span class="svc-tag">Responsive</span><span class="svc-tag">Livraison 14j</span></div>
+      <a href="#contact" class="svc-link">Demander un devis <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="svc reveal d2">
+      <div class="svc-glow"></div>
+      <div class="svc-num">02</div>
+      <div class="svc-icon">🔄</div>
+      <div class="svc-name">Refonte de site web</div>
+      <p class="svc-desc">Votre site actuel est lent ou dépassé ? Nous le transformons en un site rapide, moderne et optimisé pour attirer plus de clients et améliorer votre image en ligne.</p>
+      <div class="svc-tags"><span class="svc-tag">Audit gratuit</span><span class="svc-tag">Performance</span><span class="svc-tag">Mobile-first</span></div>
+      <a href="#contact" class="svc-link">Demander un devis <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="svc reveal d3">
+      <div class="svc-glow"></div>
+      <div class="svc-num">03</div>
+      <div class="svc-icon">📈</div>
+      <div class="svc-name">Optimisation conversion</div>
+      <p class="svc-desc">Chaque page est pensée pour inciter vos visiteurs à vous contacter, réserver ou demander un devis. On ne fait pas juste beau — on fait rentable.</p>
+      <div class="svc-tags"><span class="svc-tag">Boutons d'action</span><span class="svc-tag">Copywriting</span><span class="svc-tag">Conversion</span></div>
+      <a href="#contact" class="svc-link">Demander un devis <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="svc reveal d4">
+      <div class="svc-glow"></div>
+      <div class="svc-num">04</div>
+      <div class="svc-icon">📍</div>
+      <div class="svc-name">Référencement local</div>
+      <p class="svc-desc">Optimisation SEO pour apparaître sur Google quand les clients recherchent votre service dans votre ville. Fiche Google Business, mots-clés locaux, Core Web Vitals.</p>
+      <div class="svc-tags"><span class="svc-tag">SEO Local</span><span class="svc-tag">Google Maps</span><span class="svc-tag">Visibilité</span></div>
+      <a href="#contact" class="svc-link">Demander un devis <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- LOCAL BUSINESSES (moved after #why) -->
+<section id="local" style="display:none">
+  <div class="local-inner reveal">
+    <div class="local-left">
+      <span class="sec-label">Pourquoi nous</span>
+      <h2 class="sec-title">Vos concurrents ont déjà un site.<br><span class="grad-text">Et vous ?</span></h2>
+      <p class="local-lead">Aujourd'hui, 87% des clients recherchent un commerce local sur Google avant de se déplacer. Sans site professionnel, vous perdez ces clients — chaque jour, en silence.</p>
+      <div class="local-targets">
+        <span class="local-tag">🍽️ Restaurants</span>
+        <span class="local-tag">✂️ Salons de coiffure</span>
+        <span class="local-tag">💈 Barbiers</span>
+        <span class="local-tag">💅 Instituts de beauté</span>
+        <span class="local-tag">🏋️ Coachs & studios</span>
+        <span class="local-tag">🔧 Artisans</span>
+        <span class="local-tag">🏪 Commerces de proximité</span>
+      </div>
+      <div class="local-reasons">
+        <div class="local-reason reveal d1">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">📍</div>
+          <div class="local-reason-title">Visibilité Google</div>
+          <p class="local-reason-desc">Un site optimisé SEO vous place en tête des résultats locaux. Vos clients vous trouvent avant vos concurrents.</p>
+          <div class="local-stat">87% des recherches locales aboutissent à une visite</div>
+        </div>
+        <div class="local-reason reveal d2">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">📅</div>
+          <div class="local-reason-title">Réservations en ligne</div>
+          <p class="local-reason-desc">Vos clients réservent à 23h depuis leur canapé. Votre agenda se remplit sans que vous décrochiez le téléphone.</p>
+          <div class="local-stat">+40% de réservations hors horaires d'ouverture</div>
+        </div>
+        <div class="local-reason reveal d3">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">⭐</div>
+          <div class="local-reason-title">Image professionnelle</div>
+          <p class="local-reason-desc">Un site soigné inspire confiance instantanément. Vos visiteurs choisissent votre établissement avant même d'y mettre les pieds.</p>
+          <div class="local-stat">75% des gens jugent la crédibilité d'un commerce par son site</div>
+        </div>
+        <div class="local-reason reveal d4">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">💶</div>
+          <div class="local-reason-title">Plus de clients, moins d'effort</div>
+          <p class="local-reason-desc">Votre site travaille 24h/24 à votre place — présente vos services, répond aux questions, convertit les visiteurs en clients.</p>
+          <div class="local-stat">Retour sur investissement dès le 1er mois</div>
+        </div>
+      </div>
+    </div>
+    <!-- Right: urgency card -->
+    <div class="local-right reveal d2">
+      <div class="urgency-card">
+        <div class="urgency-header">
+          <div class="urgency-dot"></div>
+          <span class="urgency-headline">Diagnostic offert — sans engagement</span>
+        </div>
+        <div class="urgency-question">Votre commerce est-il <span class="grad-text">invisible en ligne</span> ?</div>
+        <ul class="urgency-list">
+          <li>
+            <div class="urgency-check">✓</div>
+            <span>Vous n'apparaissez pas sur la première page Google pour votre activité</span>
+          </li>
+          <li>
+            <div class="urgency-check">✓</div>
+            <span>Vous n'avez pas de système de réservation en ligne 24h/24</span>
+          </li>
+          <li>
+            <div class="urgency-check">✓</div>
+            <span>Votre site actuel n'est pas adapté aux mobiles ou fait mauvaise impression</span>
+          </li>
+          <li>
+            <div class="urgency-check">✓</div>
+            <span>Vos concurrents locaux captent des clients que vous pourriez avoir</span>
+          </li>
+        </ul>
+        <div class="urgency-cta">
+          <a href="#contact" class="btn-primary" style="text-align:center;display:block">Obtenir mon diagnostic gratuit →</a>
+          <p class="urgency-note">Réponse sous 24h · Aucun engagement · 100% gratuit</p>
+        </div>
+        <div class="competitors-lost">
+          <div class="comp-label">⚠️ Saviez-vous que...</div>
+          <p class="comp-text">Un commerce sans site web perd en moyenne <strong style="color:var(--text)">30 à 50 nouveaux clients par mois</strong> au profit de concurrents mieux référencés.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="projects-header">
+    <div class="reveal">
+      <span class="sec-label">Réalisations</span>
+      <h2 class="sec-title">Nos <span class="grad-text">concepts de design</span></h2>
+    </div>
+    <a href="#contact" class="btn-hero-ghost reveal" style="flex-shrink:0">Voir tous les projets →</a>
+  </div>
+  <div class="projects-grid">
+
+    <!-- Projet réel 1 — remplace "site1.jpg" par ton fichier -->
+    <div class="proj reveal d1">
+      <div class="proj-screen">
+        <div class="screen-real">
+          <div class="screen-nav">
+            <div class="scr-dot r"></div><div class="scr-dot y"></div><div class="scr-dot g"></div>
+            <div class="scr-url"></div>
+          </div>
+          <img src="mecton.png" alt="MECTON — Salon Homme & Barbier" class="screen-img"/>
+        </div>
+      </div>
+      <div class="proj-info">
+        <div class="proj-meta">
+          <span class="proj-cat">Salon homme & Barbier</span>
+          <span class="proj-result">Concept Design</span>
+        </div>
+        <div class="proj-name">MECTON</div>
+        <p class="proj-desc">Concept de site vitrine pour salon homme & barbier — design sombre et masculin avec prise de rendez-vous en ligne intégrée.</p>
+        <div class="proj-chips">
+          <span class="proj-cta">Voir le design <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          <span class="proj-eye"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Cliquer pour explorer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projet réel 2 — remplace "site2.jpg" par ton fichier -->
+    <div class="proj reveal d2">
+      <div class="proj-screen">
+        <div class="screen-real">
+          <div class="screen-nav">
+            <div class="scr-dot r"></div><div class="scr-dot y"></div><div class="scr-dot g"></div>
+            <div class="scr-url"></div>
+          </div>
+          <img src="osalondeli.png" alt="O'Salon d'Elisa — Salon de coiffure" class="screen-img"/>
+        </div>
+      </div>
+      <div class="proj-info">
+        <div class="proj-meta">
+          <span class="proj-cat">Salon de coiffure</span>
+          <span class="proj-result">Concept Design</span>
+        </div>
+        <div class="proj-name">O'Salon d'Elisa</div>
+        <p class="proj-desc">Concept de site vitrine pour salon de coiffure féminin — galerie de réalisations, tarifs clairs et réservation en ligne intégrée.</p>
+        <div class="proj-chips">
+          <span class="proj-cta">Voir le design <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          <span class="proj-eye"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Cliquer pour explorer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projet réel 3 — plombier -->
+    <div class="proj reveal d3">
+      <div class="proj-screen">
+        <div class="screen-real">
+          <div class="screen-nav">
+            <div class="scr-dot r"></div><div class="scr-dot y"></div><div class="scr-dot g"></div>
+            <div class="scr-url"></div>
+          </div>
+          <img src="plombier.png" alt="Site plombier — PixelForge" class="screen-img"/>
+        </div>
+      </div>
+      <div class="proj-info">
+        <div class="proj-meta">
+          <span class="proj-cat">Artisan plombier</span>
+          <span class="proj-result">Concept Design</span>
+        </div>
+        <div class="proj-name">Aquafix</div>
+        <p class="proj-desc">Concept de site vitrine pour artisan plombier — présentation des services, formulaire de devis rapide et optimisation pour les recherches locales.</p>
+        <div class="proj-chips">
+          <span class="proj-cta">Voir le design <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          <span class="proj-eye"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Cliquer pour explorer</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section id="proof">
+  <div class="proof-header reveal">
+    <span class="sec-label">Témoignages</span>
+    <h2 class="sec-title">Ce que disent <span class="grad-text">nos clients</span></h2>
+  </div>
+  <div class="proof-grid">
+    <div class="testimonial reveal d1">
+      <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="test-text">"PixelForge a complètement transformé mon salon. En un mois, mes réservations ont augmenté de 65%. Le site est magnifique et mes clients me disent souvent qu'il les a convaincus de me choisir plutôt que la concurrence."</p>
+      <div class="test-author">
+        <div class="test-avatar av1">S</div>
+        <div>
+          <div class="test-name">Sarah M.</div>
+          <div class="test-role">Gérante, Luxe Hair Studio</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal d2">
+      <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="test-text">"Franchement bluffant. En 3 semaines ils ont livré un site qui me rend fier chaque jour. Le référencement local a explosé — je suis #1 sur Google pour mon secteur. L'investissement a été rentabilisé en moins d'un mois."</p>
+      <div class="test-author">
+        <div class="test-avatar av3">K</div>
+        <div>
+          <div class="test-name">Karim B.</div>
+          <div class="test-role">Dirigeant, ProPlomberie Expert</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial reveal d3">
+      <div class="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="test-text">"L'équipe PixelForge a su capter l'essence de mon restaurant et la retranscrire en digital. Nos réservations en ligne ont triplé. Le site reflète parfaitement notre cuisine — raffiné, élégant, appétissant."</p>
+      <div class="test-author">
+        <div class="test-avatar av2">A</div>
+        <div>
+          <div class="test-name">Antoine L.</div>
+          <div class="test-role">Chef & Propriétaire, La Table Dorée</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="center reveal" style="margin-bottom:3.5rem">
+    <span class="sec-label">Notre Processus</span>
+    <h2 class="sec-title">De l'idée au site live — <span class="grad-text">en 14 jours</span></h2>
+    <p class="sec-sub center">Un processus rodé, transparent et efficace. Vous savez toujours où en est votre projet.</p>
+  </div>
+  <div class="process-grid">
+    <div class="process-step-card reveal d1">
+      <div class="ps-connector"></div>
+      <div class="ps-num-wrap"><span class="ps-num">01</span></div>
+      <div class="ps-visual">
+        <div class="ps-icon-bg">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3AABFF"/><stop offset="100%" stop-color="#7C3FFF"/></linearGradient></defs>
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-tag">Jour 1 — Gratuit</div>
+        <div class="ps-title">Analyse & Stratégie</div>
+        <p class="ps-desc">Appel découverte de 30 min. On explore votre activité, vos objectifs, vos concurrents et on définit la stratégie ensemble.</p>
+      </div>
+    </div>
+    <div class="process-step-card reveal d2">
+      <div class="ps-connector"></div>
+      <div class="ps-num-wrap"><span class="ps-num">02</span></div>
+      <div class="ps-visual">
+        <div class="ps-icon-bg">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="url(#g2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3AABFF"/><stop offset="100%" stop-color="#7C3FFF"/></linearGradient></defs>
+            <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-tag">Jours 2–5</div>
+        <div class="ps-title">Design & Maquettes</div>
+        <p class="ps-desc">Maquettes haute-fidélité. Vous validez chaque écran avant qu'on écrive une ligne de code. Révisions illimitées.</p>
+      </div>
+    </div>
+    <div class="process-step-card reveal d3">
+      <div class="ps-connector"></div>
+      <div class="ps-num-wrap"><span class="ps-num">03</span></div>
+      <div class="ps-visual">
+        <div class="ps-icon-bg">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="url(#g3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3AABFF"/><stop offset="100%" stop-color="#7C3FFF"/></linearGradient></defs>
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-tag">Jours 5–12</div>
+        <div class="ps-title">Développement</div>
+        <p class="ps-desc">Code propre et performant. Animations, formulaires, intégrations. Vous suivez l'avancement en temps réel.</p>
+      </div>
+    </div>
+    <div class="process-step-card reveal d4">
+      <div class="ps-num-wrap"><span class="ps-num">04</span></div>
+      <div class="ps-visual">
+        <div class="ps-icon-bg">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="url(#g4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs><linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3AABFF"/><stop offset="100%" stop-color="#7C3FFF"/></linearGradient></defs>
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+      </div>
+      <div class="ps-body">
+        <div class="ps-tag">Jour 14 🚀</div>
+        <div class="ps-title">Mise en ligne</div>
+        <p class="ps-desc">Déploiement, SEO technique, analytics. Et on reste disponibles 3 mois pour tout ajustement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="center reveal">
+    <span class="sec-label">Pourquoi PixelForge</span>
+    <h2 class="sec-title">La différence qui fait <span class="grad-text">toute la différence</span></h2>
+    <p class="sec-sub center">On ne livre pas des sites web. On crée des actifs digitaux qui travaillent pour vous — même quand vous dormez.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card reveal d1">
+      <div class="why-top-border"></div>
+      <div class="why-icon">⚡</div>
+      <div class="why-title">Vitesse extrême</div>
+      <p class="why-desc">Moins d'1 seconde de chargement. Google vous propulse en haut des résultats. Vos visiteurs restent. Vos ventes augmentent.</p>
+      <div class="why-metric">Chargement moyen : 0.8s</div>
+    </div>
+    <div class="why-card reveal d2">
+      <div class="why-top-border"></div>
+      <div class="why-icon">🎯</div>
+      <div class="why-title">Orienté conversion</div>
+      <p class="why-desc">Chaque bouton, chaque texte, chaque image est optimisé scientifiquement pour guider l'utilisateur vers l'action que vous voulez.</p>
+      <div class="why-metric">Taux de conversion moyen x3</div>
+    </div>
+    <div class="why-card reveal d3">
+      <div class="why-top-border"></div>
+      <div class="why-icon">✨</div>
+      <div class="why-title">Design au niveau des leaders</div>
+      <p class="why-desc">Nos designs s'inspirent des meilleures marques mondiales — Apple, Stripe, Linear. Votre image devient instantanément premium.</p>
+      <div class="why-metric">98% d'approbation client design</div>
+    </div>
+    <div class="why-card reveal d1">
+      <div class="why-top-border"></div>
+      <div class="why-icon">📱</div>
+      <div class="why-title">Mobile-first parfait</div>
+      <p class="why-desc">72% de vos visiteurs sont sur mobile. Nos sites sont conçus mobile d'abord, et sublimes sur tous les écrans. Sans compromis.</p>
+      <div class="why-metric">100% responsive garanti</div>
+    </div>
+    <div class="why-card reveal d2">
+      <div class="why-top-border"></div>
+      <div class="why-icon">🔍</div>
+      <div class="why-title">SEO & Visibilité Google</div>
+      <p class="why-desc">Architecture technique impeccable, contenu optimisé, Core Web Vitals parfaits. Vous êtes trouvé par ceux qui cherchent ce que vous offrez.</p>
+      <div class="why-metric">Score SEO moyen : 97/100</div>
+    </div>
+    <div class="why-card reveal d3">
+      <div class="why-top-border"></div>
+      <div class="why-icon">🤝</div>
+      <div class="why-title">Partenaire à long terme</div>
+      <p class="why-desc">3 mois de support inclus. Mises à jour, conseils, ajustements. On grandit avec vous — pas juste une prestation, une relation.</p>
+      <div class="why-metric">Support 24h inclus 3 mois</div>
+    </div>
+  </div>
+</section>
+
+<!-- POURQUOI NOUS (local businesses, placed after why) -->
+<section id="pourquoi-nous" style="background:var(--bg2)">
+  <div class="local-inner reveal">
+    <div class="local-left">
+      <span class="sec-label">Pourquoi nous</span>
+      <h2 class="sec-title">Vos concurrents ont déjà un site.<br><span class="grad-text">Et vous ?</span></h2>
+      <p class="local-lead">Aujourd'hui, 87% des clients recherchent un commerce local sur Google avant de se déplacer. Sans site professionnel, vous perdez ces clients — chaque jour, en silence.</p>
+      <div class="local-targets">
+        <span class="local-tag">🍽️ Restaurants</span>
+        <span class="local-tag">✂️ Salons de coiffure</span>
+        <span class="local-tag">💈 Barbiers</span>
+        <span class="local-tag">💅 Instituts de beauté</span>
+        <span class="local-tag">🏋️ Coachs & studios</span>
+        <span class="local-tag">🔧 Artisans</span>
+        <span class="local-tag">🏪 Commerces de proximité</span>
+      </div>
+      <div class="local-reasons">
+        <div class="local-reason reveal d1">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">📍</div>
+          <div class="local-reason-title">Visibilité Google</div>
+          <p class="local-reason-desc">Un site optimisé SEO vous place en tête des résultats locaux. Vos clients vous trouvent avant vos concurrents.</p>
+          <div class="local-stat">87% des recherches locales aboutissent à une visite</div>
+        </div>
+        <div class="local-reason reveal d2">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">📅</div>
+          <div class="local-reason-title">Réservations en ligne</div>
+          <p class="local-reason-desc">Vos clients réservent à 23h depuis leur canapé. Votre agenda se remplit sans que vous décrochiez le téléphone.</p>
+          <div class="local-stat">+40% de réservations hors horaires d'ouverture</div>
+        </div>
+        <div class="local-reason reveal d3">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">⭐</div>
+          <div class="local-reason-title">Image professionnelle</div>
+          <p class="local-reason-desc">Un site soigné inspire confiance instantanément. Vos visiteurs choisissent votre établissement avant même d'y mettre les pieds.</p>
+          <div class="local-stat">75% des gens jugent la crédibilité d'un commerce par son site</div>
+        </div>
+        <div class="local-reason reveal d4">
+          <div class="local-reason-glow"></div>
+          <div class="local-reason-icon">💶</div>
+          <div class="local-reason-title">Plus de clients, moins d'effort</div>
+          <p class="local-reason-desc">Votre site travaille 24h/24 à votre place — présente vos services, répond aux questions, convertit les visiteurs en clients.</p>
+          <div class="local-stat">Retour sur investissement dès le 1er mois</div>
+        </div>
+      </div>
+    </div>
+    <div class="local-right reveal d2">
+      <div class="urgency-card">
+        <div class="urgency-header">
+          <div class="urgency-dot"></div>
+          <span class="urgency-headline">Diagnostic offert — sans engagement</span>
+        </div>
+        <div class="urgency-question">Votre commerce est-il <span class="grad-text">invisible en ligne</span> ?</div>
+        <ul class="urgency-list">
+          <li><div class="urgency-check">✓</div><span>Vous n'apparaissez pas sur la première page Google pour votre activité</span></li>
+          <li><div class="urgency-check">✓</div><span>Vous n'avez pas de système de réservation en ligne 24h/24</span></li>
+          <li><div class="urgency-check">✓</div><span>Votre site actuel n'est pas adapté aux mobiles ou fait mauvaise impression</span></li>
+          <li><div class="urgency-check">✓</div><span>Vos concurrents locaux captent des clients que vous pourriez avoir</span></li>
+        </ul>
+        <div class="urgency-cta">
+          <a href="#contact" class="btn-primary" style="text-align:center;display:block">Obtenir mon diagnostic gratuit →</a>
+          <p class="urgency-note">Réponse sous 24h · Aucun engagement · 100% gratuit</p>
+        </div>
+        <div class="competitors-lost">
+          <div class="comp-label">⚠️ Saviez-vous que...</div>
+          <p class="comp-text">Un commerce sans site web perd en moyenne <strong style="color:var(--text)">30 à 50 nouveaux clients par mois</strong> au profit de concurrents mieux référencés.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OFFER BAND -->
+<section id="offer">
+  <div class="offer-inner reveal">
+    <div class="offer-text">
+      <div class="offer-tag">Offre limitée</div>
+      <h2 class="offer-h">Votre site premium,<br><span class="grad-text">livré en 14 jours.</span><br>Garantie satisfait ou remboursé.</h2>
+      <p class="offer-sub">3 créneaux disponibles ce mois-ci. Réservez votre appel découverte gratuit — on définit ensemble ce qui peut transformer votre business digital.</p>
+      <div class="offer-slots">
+        <span>Créneaux restants ce mois :</span>
+        <div class="slots-bar">
+          <div class="slot-dot"></div>
+          <div class="slot-dot empty"></div>
+          <div class="slot-dot empty"></div>
+          <div class="slot-dot empty"></div>
+          <div class="slot-dot empty"></div>
+        </div>
+        <span style="font-weight:700;color:var(--a3)">1/5 disponible</span>
+      </div>
+      <div class="offer-ctas">
+        <a href="#contact" class="btn-hero-primary">
+          Réserver mon appel gratuit
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="https://wa.me/33600000000" class="btn-hero-ghost" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+    <div class="offer-guarantee">
+      <div class="guarantee-icon">🛡️</div>
+      <div class="guarantee-title">Satisfaction garantie</div>
+      <p class="guarantee-sub">Pas satisfait du design après validation ? On recommence sans frais supplémentaires. Zéro risque pour vous.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-grid">
+    <div class="contact-left reveal-left">
+      <span class="sec-label">Contact</span>
+      <h2 class="sec-title">Parlons de votre <span class="grad-text">projet</span></h2>
+      <p class="sec-sub">Un appel de 30 min suffit pour tout cadrer. Répondez à quelques questions et on vous prépare une proposition gratuite sous 24h.</p>
+      <div class="contact-channels">
+        <a href="https://wa.me/33600000000" class="ch-btn" target="_blank">
+          <div class="ch-icon wa">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </div>
+          <div class="ch-detail">
+            <span>Discuter sur WhatsApp</span>
+            <span class="ch-label">Réponse en moins de 2h en semaine</span>
+          </div>
+        </a>
+        <a href="mailto:hello@pixelforge.fr" class="ch-btn">
+          <div class="ch-icon em">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3AABFF" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
+          </div>
+          <div class="ch-detail">
+            <span>hello@pixelforge.fr</span>
+            <span class="ch-label">Réponse garantie sous 24h</span>
+          </div>
+        </a>
+      </div>
+      <div class="contact-trust">
+        <div class="ctrust-item">
+          <svg width="14" height="14" fill="none" stroke="#3AABFF" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Devis 100% gratuit
+        </div>
+        <div class="ctrust-item">
+          <svg width="14" height="14" fill="none" stroke="#3AABFF" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Réponse en 24h
+        </div>
+        <div class="ctrust-item">
+          <svg width="14" height="14" fill="none" stroke="#3AABFF" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Sans engagement
+        </div>
+      </div>
+    </div>
+    <div class="contact-form-box reveal-right">
+      <div id="formContent">
+        <div class="form-hed">Demandez votre devis gratuit</div>
+        <p class="form-sub-text">Remplissez ce formulaire en 2 minutes et recevez une proposition personnalisée sous 24h.</p>
+        <form id="contactForm" action="https://formspree.io/f/mdapndyr" method="POST" onsubmit="submitForm(event)">
+          <input type="hidden" name="_subject" value="Nouvelle demande de devis — PixelForge"/>
+          <div class="frow">
+            <div class="fg"><label>Prénom *</label><input type="text" name="prenom" placeholder="Jean" required/></div>
+            <div class="fg"><label>Nom *</label><input type="text" name="nom" placeholder="Dupont" required/></div>
+          </div>
+          <div class="fg"><label>Email *</label><input type="email" name="email" placeholder="jean@entreprise.fr" required/></div>
+          <div class="fg"><label>Téléphone</label><input type="tel" name="telephone" placeholder="+33 6 00 00 00 00"/></div>
+          <div class="fg">
+            <label>Type de projet *</label>
+            <select name="type_projet" required>
+              <option value="" disabled selected>Sélectionnez une option…</option>
+              <option>Création de site vitrine</option>
+              <option>Refonte de site existant</option>
+              <option>Site e-commerce</option>
+              <option>Landing page / Page de vente</option>
+              <option>Site avec prise de RDV</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <div class="fg"><label>Votre projet en quelques mots *</label><textarea name="message" rows="4" placeholder="Décrivez votre activité, vos objectifs, votre budget approximatif…" required></textarea></div>
+          <button type="submit" class="form-submit">
+            <span id="submitText">Envoyer ma demande →</span>
+          </button>
+          <p class="form-note">🔒 Vos données sont sécurisées et ne seront jamais partagées.</p>
+        </form>
+      </div>
+      <div class="form-success" id="formSuccess">
+        <div class="success-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="url(#sc-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <defs><linearGradient id="sc-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3AABFF"/><stop offset="100%" stop-color="#7C3FFF"/></linearGradient></defs>
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h3>Demande envoyée <span class="grad-text">avec succès</span> !</h3>
+        <div class="success-divider"></div>
+        <p class="success-main">Merci ! Votre demande a bien été envoyée.<br>Nous vous répondrons sous <strong>24 heures</strong>.</p>
+        <p class="success-sub">Un email de confirmation vous a été envoyé.<br>En attendant, vous pouvez nous joindre directement sur WhatsApp.</p>
+        <a href="https://wa.me/33600000000" class="btn-hero-primary" style="display:inline-flex;text-decoration:none" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="opacity:.85"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Discuter sur WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT MODAL -->
+<div id="proj-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title-text" onclick="closeModalOnBg(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title-text"></div>
+        <div class="modal-cat" id="modal-cat-text"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Fermer">✕</button>
+    </div>
+    <div class="modal-gallery" id="modal-gallery"></div>
+    <div class="modal-footer">
+      <div class="modal-chips" id="modal-chips"></div>
+      <a href="#contact" class="btn-primary" onclick="closeModal()" style="font-size:0.82rem;padding:0.55rem 1.25rem">Créer mon site →</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo-wrap">
+    <div class="footer-logo-mark">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 70" width="38" height="33">
+        <defs>
+          <linearGradient id="pfg-footer" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#39A8FF"/>
+            <stop offset="100%" stop-color="#7B3CFF"/>
+          </linearGradient>
+        </defs>
+        <rect x="51" y="2"  width="5" height="20" rx="1.5" fill="url(#pfg-footer)"/>
+        <rect x="43" y="9"  width="21" height="6" rx="1.5" fill="url(#pfg-footer)"/>
+        <rect x="37" y="2"  width="5"  height="5"  rx="1"   fill="url(#pfg-footer)" opacity="0.8"/>
+        <rect x="68" y="5"  width="4"  height="4"  rx="1"   fill="url(#pfg-footer)" opacity="0.65"/>
+        <rect x="71" y="17" width="3"  height="3"  rx="0.5" fill="url(#pfg-footer)" opacity="0.45"/>
+        <rect x="2"  y="28" width="52" height="12" rx="3"   fill="url(#pfg-footer)"/>
+        <path d="M54 28 Q73 34 54 40 Z"             fill="url(#pfg-footer)"/>
+        <rect x="8"  y="40" width="38" height="8"  rx="2"   fill="url(#pfg-footer)"/>
+        <rect x="2"  y="48" width="52" height="13" rx="4"   fill="url(#pfg-footer)"/>
+        <rect x="2"  y="57" width="16" height="8"  rx="3"   fill="url(#pfg-footer)"/>
+        <rect x="38" y="57" width="16" height="8"  rx="3"   fill="url(#pfg-footer)"/>
+      </svg>
+    </div>
+    <span class="footer-logo-text">PixelForge</span>
+  </div>
+  <div class="footer-tagline">Forgez votre présence digitale</div>
+  <div class="footer-links">
+    <a href="#services">Services</a>
+    <a href="#projects">Projets</a>
+    <a href="#process">Processus</a>
+    <a href="#why">Avantages</a>
+    <a href="#proof">Témoignages</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 PixelForge. Tous droits réservés. — Conçu avec passion pour votre succès.</div>
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+<a href="https://wa.me/33600000000" class="float-wa" target="_blank" title="WhatsApp">
+  <div class="float-wa-tooltip">Discuter maintenant →</div>
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- MOBILE STICKY CTA -->
+<div class="mobile-cta-bar">
+  <a href="#contact">🚀 Créer mon site — Devis gratuit</a>
+</div>
+
+<script>
+// ── Nav scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+}, {passive:true});
+
+// ── Mobile nav toggle
+function toggleNav() {
+  const links = document.getElementById('navLinks');
+  const spans = document.querySelectorAll('.burger span');
+  links.classList.toggle('open');
+  const open = links.classList.contains('open');
+  spans[0].style.transform = open ? 'rotate(45deg) translate(5px,5px)' : '';
+  spans[1].style.opacity = open ? '0' : '';
+  spans[2].style.transform = open ? 'rotate(-45deg) translate(5px,-5px)' : '';
+}
+document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => {
+  document.getElementById('navLinks').classList.remove('open');
+  document.querySelectorAll('.burger span').forEach(s => {s.style.transform='';s.style.opacity='';});
+}));
+
+// ── Intersection observer — scroll reveal
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, {threshold: 0.1, rootMargin: '0px 0px -40px 0px'});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el => io.observe(el));
+
+// ── Counter animation (eased)
+function easeOut(t) { return 1 - Math.pow(1-t, 3); }
+function animateCounter(el, target, suffix) {
+  const duration = 1600;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min((now - start) / duration, 1);
+    const val = Math.round(easeOut(t) * target);
+    el.textContent = val + (suffix || '');
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+const metricsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('[data-target]').forEach(el => {
+        animateCounter(el, +el.dataset.target, el.dataset.suffix || '');
+      });
+      metricsObserver.disconnect();
+    }
+  });
+}, {threshold: 0.5});
+const metricsEl = document.querySelector('.hero-metrics');
+if (metricsEl) metricsObserver.observe(metricsEl);
+
+// ── Project modal
+const projects = {
+  mecton: {
+    title: 'MECTON',
+    cat: 'Salon homme & Barbier',
+    chips: ['Design UI/UX','Booking en ligne','SEO Local'],
+    images: [
+      {src:'mecton.png', full:true},
+      {src:'mecton-2.png', full:false},
+      {src:'mecton-3.png', full:false},
+    ]
+  },
+  osalondeli: {
+    title: "O'Salon d'Elisa",
+    cat: 'Salon de coiffure',
+    chips: ['Design UI/UX','Réservation','SEO Local'],
+    images: [
+      {src:'osalondeli.png', full:true},
+      {src:'osalondeli-2.png', full:false},
+      {src:'osalondeli-3.png', full:false},
+    ]
+  },
+  plombier: {
+    title: 'Aquafix',
+    cat: 'Artisan plombier',
+    chips: ['Site vitrine','Formulaire contact','SEO Local'],
+    images: [
+      {src:'plombier.png', full:true},
+      {src:'plombier-2.png', full:false},
+      {src:'plombier-3.png', full:false},
+    ]
+  }
+};
+
+function openModal(key) {
+  const p = projects[key]; if(!p) return;
+  document.getElementById('modal-title-text').textContent = p.title;
+  document.getElementById('modal-cat-text').textContent = p.cat;
+  const gallery = document.getElementById('modal-gallery');
+  gallery.innerHTML = p.images.map(img =>
+    `<img src="${img.src}" alt="${p.title}" class="${img.full?'full':''}" loading="lazy" onerror="this.style.display='none'">`
+  ).join('');
+  document.getElementById('modal-chips').innerHTML = p.chips.map(c=>`<span class="chip">${c}</span>`).join('');
+  const modal = document.getElementById('proj-modal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('proj-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeModalOnBg(e) {
+  if(e.target === document.getElementById('proj-modal')) closeModal();
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// Attach click to project cards
+const projCards = document.querySelectorAll('.proj');
+const projKeys = ['mecton','osalondeli','plombier'];
+projCards.forEach((card, i) => {
+  if(projKeys[i]) card.addEventListener('click', () => openModal(projKeys[i]));
+});
+
+// ── Form submit → Formspree
+async function submitForm(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn  = form.querySelector('.form-submit');
+  const txt  = document.getElementById('submitText');
+  txt.textContent = 'Envoi en cours…';
+  btn.disabled = true;
+  try {
+    const res = await fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { Accept: 'application/json' }
+    });
+    if (res.ok) {
+      document.getElementById('formContent').style.display = 'none';
+      document.getElementById('formSuccess').style.display  = 'block';
+    } else {
+      txt.textContent = 'Envoyer ma demande →';
+      btn.disabled = false;
+      alert('Une erreur est survenue. Réessayez ou contactez-nous sur WhatsApp.');
+    }
+  } catch {
+    txt.textContent = 'Envoyer ma demande →';
+    btn.disabled = false;
+    alert('Connexion impossible. Vérifiez votre connexion et réessayez.');
+  }
+}
+
+// ── (parallax handled in unified background system below) ──
+
+// ── Magnetic buttons (subtle)
+document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
+  btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = `translate(${x * 0.12}px, ${y * 0.18}px) translateY(-2px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
+
+// ════════════════════════════════════════════════════════════
+// BACKGROUND SYSTEM — GPU-OPTIMISED
+//
+// Single RAF loop drives both:
+//   A) Parallax  — lerped mouse + scroll, per-layer speeds
+//   B) Particles — axis-aligned canvas ops, no save/restore
+//
+// Perf decisions:
+//   • filter:blur lives on #bg-l2 (1 GPU pass, not N)
+//   • will-change only on the two parallax containers
+//   • No ctx.save/restore in the draw loop (expensive)
+//   • No ctx.rotate — axis-aligned fillRect is GPU-native
+//   • fillStyle written once per color group (batched)
+//   • Scroll parallax disabled on touch — janky on mobile
+//   • Fewer particles on mobile (screen px budget)
+//   • prefers-reduced-motion: canvas hidden via CSS,
+//     loop never started here
+// ════════════════════════════════════════════════════════════
+(function initBackground() {
+
+  // ── prefers-reduced-motion check ──────────────────────────
+  // Canvas is already hidden via CSS media query; we also skip
+  // the JS loop entirely so no RAF is registered.
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+  // ── DOM refs ──────────────────────────────────────────────
+  const l1     = document.getElementById('bg-l1');
+  const l2     = document.getElementById('bg-l2');
+  const orbs   = document.querySelectorAll('.hero-orb');
+  const canvas = document.getElementById('bg-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d', {alpha: true});
+
+  // ── Device capabilities ───────────────────────────────────
+  // Touch = mobile/tablet: fewer particles, no scroll parallax.
+  const isTouch  = navigator.maxTouchPoints > 0;
+  // Particle budget: mobile gets ~40% of desktop count.
+  const BUDGET   = isTouch ? { pixel:6, dot:10, shimmer:6 }
+                           : { pixel:16, dot:22, shimmer:12 };
+
+  // ── State ─────────────────────────────────────────────────
+  let W = 0, H = 0;
+  let rafId = null;
+  let pts   = [];           // particle array
+
+  // Parallax: raw mouse target, lerped current value
+  let txM = 0, tyM = 0;    // mouse target  (−0.5 … +0.5)
+  let cx  = 0, cy  = 0;    // current lerped value
+  // Last written transforms — skip DOM write if delta < EPS
+  const EPS = 0.08;
+  let l1x = 9999, l1y = 9999, l2x = 9999, l2y = 9999;
+
+  // Scroll (only used on non-touch)
+  let sY = 0;
+
+  // ── Input listeners ───────────────────────────────────────
+  window.addEventListener('mousemove', e => {
+    txM = e.clientX / innerWidth  - 0.5;
+    tyM = e.clientY / innerHeight - 0.5;
+  }, {passive:true});
+
+  if (!isTouch) {
+    window.addEventListener('scroll', () => { sY = scrollY; }, {passive:true});
+  }
+
+  // ── Perspective grid ─────────────────────────────────────
+  // State persists across frames so the scroll is continuous.
+  const grid = { scroll: 0 };
+
+  function drawGrid() {
+    // Vanishing point: horizontal centre, 13% from top
+    const vpX  = W * 0.50;
+    const vpY  = H * 0.13;
+    // Grid floor: 78% down — sits within the hero section
+    const gBot = H * 0.78;
+
+    // Exact brand blue: #39A8FF = rgb(57,168,255)
+    const R = 57, G = 168, B = 255;
+
+    // Very slow scroll: lines appear to drift toward viewer.
+    // 0.00016/frame ≈ one full cycle every ~6250 frames (~100 s at 60fps)
+    grid.scroll = (grid.scroll + 0.00016) % 1;
+
+    ctx.save();
+    ctx.lineWidth = 0.6;
+
+    // ── Fan lines — radiate from VP to bottom ──────────────
+    // 14 lines spread across 2.2× screen width so the fan
+    // always extends beyond screen edges at any viewport size.
+    const FANS = 14;
+    for (let i = 0; i <= FANS; i++) {
+      const frac  = i / FANS;                         // 0 … 1
+      const xBot  = vpX + (frac - 0.5) * W * 2.2;    // bottom endpoint
+      // Centre lines are strongest; edge lines fade to invisible.
+      const dist  = Math.abs(frac - 0.5) * 2;         // 0=centre, 1=edge
+      const alpha = 0.055 * (1 - dist * dist);         // quadratic falloff
+      ctx.strokeStyle = `rgba(${R},${G},${B},${alpha.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.moveTo(vpX, vpY);
+      ctx.lineTo(xBot, gBot);
+      ctx.stroke();
+    }
+
+    // ── Cross lines — perspective-spaced, slowly scrolling ─
+    // Each line's depth t is offset by grid.scroll so all
+    // lines animate together as one continuous surface.
+    const CROSS = 14;
+    for (let i = 1; i <= CROSS; i++) {
+      // t in 0…1 where 0 = at VP, 1 = at grid floor
+      const t      = ((i / CROSS) + grid.scroll) % 1;
+      // Quadratic gives perspective foreshortening near VP
+      const depth  = t * t;
+      const y      = vpY + (gBot - vpY) * depth;
+
+      // Line width expands with depth (perspective widening)
+      const halfW  = (W * 0.48 + W * 0.12) * depth + W * 0.04;
+
+      // Alpha: fade near VP (depth→0) and fade at grid floor
+      const aIn    = Math.min(1, depth * 9);           // ramp up from VP
+      const aOut   = 1 - Math.max(0, (depth - 0.80) / 0.20); // ramp down at floor
+      const alpha  = 0.065 * aIn * aOut;
+
+      ctx.strokeStyle = `rgba(${R},${G},${B},${alpha.toFixed(3)})`;
+      ctx.beginPath();
+      ctx.moveTo(vpX - halfW, y);
+      ctx.lineTo(vpX + halfW, y);
+      ctx.stroke();
+    }
+
+    // ── Horizon glow — brand-blue gradient line at VP ──────
+    // A single glowing line at the vanishing point level.
+    // Uses a horizontal gradient so it's bright at centre
+    // and fully transparent at both screen edges.
+    const hg = ctx.createLinearGradient(0, 0, W, 0);
+    hg.addColorStop(0.00, `rgba(${R},${G},${B},0)`);
+    hg.addColorStop(0.28, `rgba(${R},${G},${B},0.028)`);
+    hg.addColorStop(0.50, `rgba(${R},${G},${B},0.072)`); // peak centre
+    hg.addColorStop(0.72, `rgba(${R},${G},${B},0.028)`);
+    hg.addColorStop(1.00, `rgba(${R},${G},${B},0)`);
+    ctx.strokeStyle = hg;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, vpY);
+    ctx.lineTo(W, vpY);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  // ── Particle helpers ──────────────────────────────────────
+  // Pre-built rgb strings — avoids string allocation in hot loop.
+  // Colors: electric blue, neon purple, mid blue-purple (bias blue).
+  const PALETTE = [
+    'rgb(57,168,255)',    // #39A8FF
+    'rgb(123,60,255)',    // #7B3CFF
+    'rgb(57,168,255)',    // bias blue
+    'rgb(82,108,255)',    // mid
+  ];
+  // Per-type configs
+  const CFG = {
+    pixel:   {szA:1.3, szB:2.6, spA:0.008, spB:0.032, opA:0.06, opB:0.22},
+    dot:     {szA:0.4, szB:1.3, spA:0.010, spB:0.040, opA:0.04, opB:0.16},
+    shimmer: {szA:0.6, szB:1.6, spA:0.000, spB:0.004, opA:0.03, opB:0.12},
+  };
+
+  function rnd(a, b)  { return a + Math.random() * (b - a); }
+  function rndInt(n)  { return Math.floor(Math.random() * n); }
+
+  function spawn(kind, atBottom) {
+    const c = CFG[kind];
+    const sp = rnd(c.spA, c.spB);
+    return {
+      kind,
+      x:   Math.random() * W,
+      y:   atBottom ? rnd(0, H) : H + 8,
+      sz:  rnd(c.szA, c.szB),
+      col: PALETTE[rndInt(PALETTE.length)],
+      op:  rnd(c.opA, c.opB),
+      // velocity
+      vx:  kind === 'shimmer' ? rnd(-0.002,0.002) : rnd(-sp*0.45, sp*0.45),
+      vy:  kind === 'shimmer' ? rnd(-0.002,0.002) : -(sp + 0.005),
+      // opacity pulse
+      ph:  Math.random() * Math.PI * 2,
+      phS: kind === 'shimmer' ? rnd(0.010,0.018) : rnd(0.002,0.005),
+    };
+  }
+
+  function resize() {
+    W = canvas.width  = innerWidth;
+    H = canvas.height = innerHeight;
+    // Reset tracked transforms so they're rewritten after resize
+    l1x = l1y = l2x = l2y = 9999;
+  }
+
+  function buildParticles() {
+    pts = [];
+    for (const [kind, n] of Object.entries(BUDGET)) {
+      for (let i = 0; i < n; i++) pts.push(spawn(kind, true));
+    }
+  }
+
+  // ── Main RAF loop ─────────────────────────────────────────
+  function tick() {
+
+    // ── A) Parallax ──────────────────────────────────────
+    // Lerp factor 0.038 → silky, ~25-frame settle time.
+    cx += (txM - cx) * 0.038;
+    cy += (tyM - cy) * 0.038;
+
+    // Layer 1: barely moves (deepest depth plane)
+    const n1x = cx * 13;
+    const n1y = cy * 9 + sY * 0.008;
+    if (Math.abs(n1x - l1x) > EPS || Math.abs(n1y - l1y) > EPS) {
+      l1.style.transform = `translate(${n1x.toFixed(2)}px,${n1y.toFixed(2)}px)`;
+      l1x = n1x; l1y = n1y;
+    }
+
+    // Layer 2: blobs move more (mid depth)
+    const n2x = cx * 32;
+    const n2y = cy * 22 + sY * 0.022;
+    if (Math.abs(n2x - l2x) > EPS || Math.abs(n2y - l2y) > EPS) {
+      l2.style.transform = `translate(${n2x.toFixed(2)}px,${n2y.toFixed(2)}px)`;
+      l2x = n2x; l2y = n2y;
+    }
+
+    // Hero orbs: most reactive (closest depth, hero-section only)
+    orbs.forEach((o, i) => {
+      const f = (i + 1) * 8;
+      o.style.transform = `translate(${(cx*f).toFixed(1)}px,${(cy*f).toFixed(1)}px)`;
+    });
+
+    // ── B) Grid + Particles ───────────────────────────────
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid is drawn first (bottom of canvas layer order).
+    // Skip on mobile: touch devices already drop the mid blob,
+    // and the grid adds fill-rate cost on small GPU budgets.
+    if (!isTouch) drawGrid();
+
+    // Group draws by fillStyle to minimise GPU state changes.
+    // Each palette color is drawn in one batch.
+    for (let ci = 0; ci < PALETTE.length; ci++) {
+      const col = PALETTE[ci];
+      ctx.fillStyle = col;
+
+      for (let i = pts.length - 1; i >= 0; i--) {
+        const p = pts[i];
+        if (p.col !== col) continue;  // handled in another batch
+
+        // Sine-pulse opacity — no Math.sin branch inside hot path
+        p.ph += p.phS;
+        const sine  = 0.5 + 0.5 * Math.sin(p.ph);
+        // shimmer: full pulse swing; others: subtle
+        ctx.globalAlpha = p.op * (p.kind === 'shimmer' ? sine : 0.55 + 0.45 * sine);
+
+        if (p.kind === 'pixel') {
+          // Axis-aligned fillRect — no save/restore, no rotate.
+          // At 1.3–2.6px, rotation is sub-pixel and invisible.
+          const s = p.sz * 2 | 0;            // integer pixel size
+          ctx.fillRect(p.x | 0, p.y | 0, s, s);
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.sz, 0, 6.2832); // 6.2832 ≈ 2π, avoids Math.PI
+          ctx.fill();
+        }
+
+        // Drift
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Boundary / recycling
+        if (p.kind === 'shimmer') {
+          if (p.x < -8) p.x = W + 8; else if (p.x > W + 8) p.x = -8;
+          if (p.y < -8) p.y = H + 8; else if (p.y > H + 8) p.y = -8;
+        } else {
+          if (p.y < -p.sz * 4) { pts[i] = spawn(p.kind, false); continue; }
+          if (p.x < -8) p.x = W + 8; else if (p.x > W + 8) p.x = -8;
+        }
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // ── Lifecycle ─────────────────────────────────────────────
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
+    else if (!rafId)     { tick(); }
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { resize(); buildParticles(); }, 150);
+  }, {passive:true});
+
+  resize();
+  buildParticles();
+  tick();
+
+})();
+
+// ── Active nav link on scroll
+const sections = document.querySelectorAll('section[id]');
+const navAs = document.querySelectorAll('.nav-center a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navAs.forEach(a => {
+    const isActive = a.getAttribute('href') === '#' + current;
+    a.style.color = isActive ? 'var(--text)' : '';
+    a.style.background = isActive ? 'rgba(255,255,255,0.06)' : '';
+  });
+}, {passive:true});
+</script>
+</body>
+</html>
