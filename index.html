@@ -201,8 +201,11 @@
       100%{transform:translateX(60%)  skewX(-8deg);opacity:0}
     }
 
-    /* ── Layer 3: canvas — particles ───────── */
-    #bg-canvas{position:absolute;inset:0;width:100%;height:100%}
+    /* ── Layer 3: canvas — particles ── */
+    #bg-canvas{
+      position:fixed;inset:0;width:100%;height:100%;
+      z-index:1;pointer-events:none;
+    }
 
     /* ── Layer 4: vignette — radial dark mask ───────────────
        Tight ellipse: brightens the hero center,
@@ -225,7 +228,7 @@
     @media(prefers-reduced-motion:reduce){
       .bg-blob,#bg-aurora{animation:none!important}
       #bg-grid{animation:none!important}
-      #bg-canvas{display:none}
+      #bg-canvas{opacity:0.3}
     }
 
     /* ── Mobile: lighter workload ───────────────────────── */
@@ -1059,7 +1062,12 @@
       .offer-guarantee{min-width:unset;width:100%}
       .hero-metrics{grid-template-columns:repeat(2,1fr)}
       .mobile-cta-bar{display:block}
-      body{padding-bottom:70px}
+      body{padding-bottom:80px}
+      /* Hero: assez de place pour que les boutons ne passent pas sous la barre sticky */
+      #hero{padding-bottom:160px}
+      /* Boutons hero empilés proprement sur mobile */
+      .hero-ctas{flex-direction:column;align-items:center;gap:0.75rem}
+      .btn-hero-primary,.btn-hero-ghost{width:100%;max-width:340px;justify-content:center}
     }
     @media(max-width:640px){
       section{padding:56px max(24px,5%)}
@@ -1070,6 +1078,7 @@
       .svc.featured{grid-column:span 1}
       .frow{grid-template-columns:1fr}
       .hero-metrics{grid-template-columns:repeat(2,1fr)}
+      #hero{padding-bottom:180px}
       .float-wa{bottom:5.5rem;right:1.25rem}
       /* On small screens, skip reveal animations entirely for reliability */
       .reveal,.reveal-left,.reveal-right{
@@ -2046,82 +2055,64 @@ async function submitForm(e) {
 
 // ── (parallax handled in unified background system below) ──
 
-// ── Magnetic buttons (subtle)
-document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
-  btn.addEventListener('mousemove', (e) => {
-    const rect = btn.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    btn.style.transform = `translate(${x * 0.12}px, ${y * 0.18}px) translateY(-2px)`;
-  });
-  btn.addEventListener('mouseleave', () => {
-    btn.style.transform = '';
-  });
-});
+// Magnetic buttons removed — CSS hover handles the effect cleanly
 
 // ════════════════════════════════════════════════════════════
-// BACKGROUND SYSTEM — GPU-OPTIMISED
-//
-// Single RAF loop drives both:
-//   A) Parallax  — lerped mouse + scroll, per-layer speeds
-//   B) Particles — axis-aligned canvas ops, no save/restore
-//
-// Perf decisions:
-//   • filter:blur lives on #bg-l2 (1 GPU pass, not N)
-//   • will-change only on the two parallax containers
-//   • No ctx.save/restore in the draw loop (expensive)
-//   • No ctx.rotate — axis-aligned fillRect is GPU-native
-//   • fillStyle written once per color group (batched)
-//   • Scroll parallax disabled on touch — janky on mobile
-//   • Fewer particles on mobile (screen px budget)
-//   • prefers-reduced-motion: canvas hidden via CSS,
-//     loop never started here
+// BACKGROUND SYSTEM — identique desktop + mobile
 // ════════════════════════════════════════════════════════════
-(function initBackground() {
+window.addEventListener('DOMContentLoaded', function() {
 
-  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  console.log('PixelForge particles: script loaded');
 
+  // ── Canvas setup forcé ───────────────────────────────────
+  const canvas = document.getElementById('bg-canvas');
+  if (!canvas) { console.warn('canvas #bg-canvas introuvable'); return; }
+  const ctx = canvas.getContext('2d', {alpha: true});
+
+  canvas.style.display    = 'block';
+  canvas.style.position   = 'fixed';
+  canvas.style.top        = '0';
+  canvas.style.left       = '0';
+  canvas.style.width      = '100%';
+  canvas.style.height     = '100%';
+  canvas.style.zIndex     = '1';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.opacity    = '1';
+
+  // ── Parallax layers ──────────────────────────────────────
   const l1   = document.getElementById('bg-l1');
   const l2   = document.getElementById('bg-l2');
   const orbs = document.querySelectorAll('.hero-orb');
-  const canvas = document.getElementById('bg-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d', {alpha:true});
-
-  const isTouch    = navigator.maxTouchPoints > 0;
-  const N          = isTouch ? 35 : 70;
-  const LINK_DIST  = isTouch ? 130 : 170;
-  const REPEL_R    = 260;   // mouse repulsion radius (px)
-  const REPEL_F    = 9;     // repulsion strength — very strong
-  const ATTRACT_F  = 0.007; // inter-cube soft pull
-
-  let W = 0, H = 0, rafId = null, pts = [];
-
-  // Mouse: real pixel coords (not normalised)
-  let mouseX = -9999, mouseY = -9999;
-  // Parallax (normalised -0.5…+0.5)
-  let txM = 0, tyM = 0, cx = 0, cy = 0;
+  let txM = 0, tyM = 0, cx = 0, cy = 0, sY = 0;
   const EPS = 0.08;
   let l1x = 9999, l1y = 9999, l2x = 9999, l2y = 9999;
-  let sY = 0;
+  window.addEventListener('scroll', () => { sY = scrollY; }, {passive:true});
+
+  // ── Pointeur unifié mouse + touch ───────────────────────
+  const ptr = { x: window.innerWidth / 2, y: window.innerHeight / 2, active: false };
 
   window.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    txM = e.clientX / innerWidth  - 0.5;
-    tyM = e.clientY / innerHeight - 0.5;
+    ptr.x = e.clientX; ptr.y = e.clientY; ptr.active = true;
+    txM = e.clientX / window.innerWidth  - 0.5;
+    tyM = e.clientY / window.innerHeight - 0.5;
   }, {passive:true});
-
-  // Touch support for mobile reactivity
+  window.addEventListener('mouseleave', () => { ptr.active = false; }, {passive:true});
+  window.addEventListener('touchstart', e => {
+    ptr.x = e.touches[0].clientX; ptr.y = e.touches[0].clientY; ptr.active = true;
+  }, {passive:true});
   window.addEventListener('touchmove', e => {
-    const t = e.touches[0];
-    mouseX = t.clientX; mouseY = t.clientY;
+    ptr.x = e.touches[0].clientX; ptr.y = e.touches[0].clientY; ptr.active = true;
   }, {passive:true});
-  window.addEventListener('touchend', () => { mouseX = -9999; mouseY = -9999; }, {passive:true});
+  window.addEventListener('touchend', () => { ptr.active = false; }, {passive:true});
 
-  if (!isTouch) {
-    window.addEventListener('scroll', () => { sY = scrollY; }, {passive:true});
-  }
+  // ── Config particules — MÊME valeurs desktop + mobile ────
+  const N         = 50;
+  const LINK_DIST = 150;
+  const REPEL_R   = 220;
+  const REPEL_F   = 7;
+  const ATTRACT_F = 0.006;
+
+  let W = 0, H = 0, rafId = null, pts = [];
 
   // ── Perspective grid ─────────────────────────────────────
   // State persists across frames so the scroll is continuous.
@@ -2228,14 +2219,14 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
       sz: rnd(5, 13),                 // plus grand — visible sur contenu
       rot: Math.random() * Math.PI * 2,
       rotV: rnd(-0.012, 0.012),
-      baseOp: rnd(0.12, 0.28),        // semi-transparent au repos
+      baseOp: rnd(0.35, 0.65),        // bien visible sur desktop et mobile
       col,
     };
   }
 
   function resize() {
-    W = canvas.width  = innerWidth;
-    H = canvas.height = innerHeight;
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
     l1x = l1y = l2x = l2y = 9999;
   }
 
@@ -2276,17 +2267,17 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
 
     // ── B) Clear + Grid ───────────────────────────────────
     ctx.clearRect(0, 0, W, H);
-    if (!isTouch) drawGrid();
+    drawGrid();
 
     // ── C) Physics ────────────────────────────────────────
     for (let i = 0; i < pts.length; i++) {
       const p = pts[i];
       p.ax = 0; p.ay = 0;
 
-      // 1) Mouse REPULSION — cubes flee the cursor
-      const mdx = mouseX - p.x, mdy = mouseY - p.y;
+      // 1) Pointer REPULSION — cubes flee cursor / finger
+      const mdx = ptr.x - p.x, mdy = ptr.y - p.y;
       const md2 = mdx * mdx + mdy * mdy;
-      if (md2 < REPEL_R * REPEL_R && mouseX > -999) {
+      if (md2 < REPEL_R * REPEL_R && ptr.active) {
         const md = Math.sqrt(md2) || 1;
         const f  = REPEL_F * (1 - md / REPEL_R) * (1 - md / REPEL_R);
         p.ax -= (mdx / md) * f;
@@ -2340,20 +2331,19 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
     }
 
     // ── E) Draw cursor ripple ─────────────────────────────
-    if (mouseX > -999) {
-      const rg = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, REPEL_R);
+    if (ptr.active) {
+      const rg = ctx.createRadialGradient(ptr.x, ptr.y, 0, ptr.x, ptr.y, REPEL_R);
       rg.addColorStop(0,   'rgba(200,64,255,0.13)');
       rg.addColorStop(0.4, 'rgba(200,64,255,0.05)');
       rg.addColorStop(1,   'rgba(200,64,255,0)');
       ctx.fillStyle = rg;
       ctx.beginPath();
-      ctx.arc(mouseX, mouseY, REPEL_R, 0, 6.2832);
+      ctx.arc(ptr.x, ptr.y, REPEL_R, 0, 6.2832);
       ctx.fill();
-      // Inner ring
       ctx.strokeStyle = 'rgba(200,64,255,0.25)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(mouseX, mouseY, 18, 0, 6.2832);
+      ctx.arc(ptr.x, ptr.y, 18, 0, 6.2832);
       ctx.stroke();
     }
 
@@ -2396,13 +2386,14 @@ document.querySelectorAll('.btn-hero-primary,.btn-nav').forEach(btn => {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => { resize(); buildParticles(); }, 150);
-  }, {passive:true});
+  }, {passive: true});
 
   resize();
   buildParticles();
   tick();
+  console.log('PixelForge particles: animation démarrée, N=' + pts.length);
 
-})();
+});
 
 // ── Active nav link on scroll
 const sections = document.querySelectorAll('section[id]');
