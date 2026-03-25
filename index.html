@@ -58,13 +58,15 @@
       position:absolute;inset:-6%;
       will-change:transform;
       background:
-        radial-gradient(ellipse 110% 70% at 12% -8%,
-          rgba(57,168,255,0.09) 0%, transparent 52%),
-        radial-gradient(ellipse 90%  60% at 92% 112%,
-          rgba(123,60,255,0.10) 0%, transparent 52%),
-        radial-gradient(ellipse 50%  35% at 55%  78%,
-          rgba(100,40,220,0.04) 0%, transparent 60%),
-        #0B0F17;
+        radial-gradient(ellipse 120% 75% at 10% -5%,
+          rgba(57,168,255,0.18) 0%, transparent 52%),
+        radial-gradient(ellipse 100% 65% at 94% 115%,
+          rgba(123,60,255,0.20) 0%, transparent 52%),
+        radial-gradient(ellipse 60%  40% at 55% 80%,
+          rgba(100,40,220,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 50%  35% at 80% 20%,
+          rgba(255,58,140,0.08) 0%, transparent 55%),
+        #080C14;
     }
 
     /* ── Layer 2: glow blob group ──────────────────────────
@@ -78,54 +80,83 @@
     }
     .bg-blob{position:absolute;border-radius:50%}
 
-    /* Blob A — #39A8FF electric blue, upper-left */
+    /* Blob A — electric blue, upper-left */
     .bb-blue{
-      width:min(90vw,1000px);height:min(90vw,1000px);
-      top:-35%;left:-20%;
+      width:min(110vw,1200px);height:min(110vw,1200px);
+      top:-40%;left:-25%;
       background:radial-gradient(circle at 38% 38%,
-        rgba(57,168,255,0.52) 0%,
-        rgba(57,168,255,0.14) 42%,
-        transparent 68%);
-      animation:blobA 28s ease-in-out infinite alternate;
+        rgba(57,168,255,0.72) 0%,
+        rgba(57,168,255,0.28) 40%,
+        transparent 65%);
+      animation:blobA 20s ease-in-out infinite alternate;
     }
-    /* Blob B — #7B3CFF neon purple, lower-right */
+    /* Blob B — neon purple, lower-right */
     .bb-purple{
-      width:min(80vw,900px);height:min(80vw,900px);
-      bottom:-32%;right:-25%;
+      width:min(100vw,1100px);height:min(100vw,1100px);
+      bottom:-38%;right:-28%;
       background:radial-gradient(circle at 62% 62%,
-        rgba(123,60,255,0.56) 0%,
-        rgba(123,60,255,0.16) 42%,
-        transparent 68%);
-      animation:blobB 34s ease-in-out infinite alternate;
+        rgba(123,60,255,0.75) 0%,
+        rgba(123,60,255,0.28) 40%,
+        transparent 65%);
+      animation:blobB 24s ease-in-out infinite alternate;
     }
-    /* Blob C — brand midpoint rgb(90,114,255), left-center */
+    /* Blob C — mid blue-purple, center */
     .bb-mid{
-      width:min(60vw,680px);height:min(60vw,680px);
-      top:28%;left:10%;
+      width:min(70vw,800px);height:min(70vw,800px);
+      top:25%;left:15%;
       background:radial-gradient(circle at 44% 44%,
-        rgba(90,114,255,0.22) 0%,
-        rgba(57,168,255,0.06) 50%,
-        transparent 70%);
-      animation:blobC 22s ease-in-out infinite alternate;
+        rgba(90,114,255,0.38) 0%,
+        rgba(57,168,255,0.12) 48%,
+        transparent 68%);
+      animation:blobC 18s ease-in-out infinite alternate;
+    }
+    /* Blob D — rose/magenta accent, top-right */
+    .bb-rose{
+      width:min(65vw,720px);height:min(65vw,720px);
+      top:-15%;right:-10%;
+      background:radial-gradient(circle at 50% 50%,
+        rgba(255,58,140,0.38) 0%,
+        rgba(200,40,180,0.14) 44%,
+        transparent 68%);
+      animation:blobD 26s ease-in-out infinite alternate;
+    }
+    /* Blob E — cyan accent, bottom-left */
+    .bb-cyan{
+      width:min(55vw,620px);height:min(55vw,620px);
+      bottom:-10%;left:5%;
+      background:radial-gradient(circle at 50% 50%,
+        rgba(0,220,255,0.28) 0%,
+        rgba(0,180,255,0.08) 44%,
+        transparent 68%);
+      animation:blobE 22s ease-in-out infinite alternate;
     }
 
-    /* transform-only keyframes — compositor thread, zero repaints */
     @keyframes blobA{
-      0%  {transform:translate(0,0)    scale(1)   }
-      30% {transform:translate(5%,6%)  scale(1.04)}
-      65% {transform:translate(9%,2%)  scale(0.97)}
-      100%{transform:translate(4%,11%) scale(1.08)}
+      0%  {transform:translate(0,0)     scale(1)   }
+      25% {transform:translate(6%,8%)   scale(1.06)}
+      60% {transform:translate(11%,3%)  scale(0.95)}
+      100%{transform:translate(5%,13%)  scale(1.10)}
     }
     @keyframes blobB{
-      0%  {transform:translate(0,0)      scale(1)   }
-      28% {transform:translate(-6%,-5%)  scale(0.94)}
-      62% {transform:translate(-10%,-2%) scale(1.04)}
-      100%{transform:translate(-5%,-9%)  scale(0.90)}
+      0%  {transform:translate(0,0)       scale(1)   }
+      25% {transform:translate(-8%,-6%)   scale(0.92)}
+      60% {transform:translate(-13%,-3%)  scale(1.06)}
+      100%{transform:translate(-6%,-11%)  scale(0.88)}
     }
     @keyframes blobC{
+      0%  {transform:translate(0,0)     scale(1)   }
+      40% {transform:translate(-7%,11%) scale(1.14)}
+      100%{transform:translate(6%,16%)  scale(0.90)}
+    }
+    @keyframes blobD{
+      0%  {transform:translate(0,0)     scale(1)   }
+      35% {transform:translate(-9%,7%)  scale(1.08)}
+      100%{transform:translate(-4%,14%) scale(0.92)}
+    }
+    @keyframes blobE{
       0%  {transform:translate(0,0)    scale(1)   }
-      45% {transform:translate(-5%,9%) scale(1.10)}
-      100%{transform:translate(4%,14%) scale(0.93)}
+      45% {transform:translate(8%,-6%) scale(1.12)}
+      100%{transform:translate(3%,8%)  scale(0.94)}
     }
 
     /* ── Layer 2.5: CSS tech grid ─────────────────────────
@@ -138,18 +169,35 @@
       top:-64px;left:0;right:0;bottom:-64px;
       will-change:transform;
       background-image:
-        linear-gradient(rgba(57,168,255,0.042) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(123,60,255,0.036) 1px, transparent 1px);
+        linear-gradient(rgba(57,168,255,0.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(123,60,255,0.07) 1px, transparent 1px);
       background-size:64px 64px;
-      animation:gridDrift 16s linear infinite;
+      animation:gridDrift 12s linear infinite;
       -webkit-mask-image:linear-gradient(to bottom,
-        transparent 0%,rgba(0,0,0,0.75) 14%,rgba(0,0,0,0.75) 86%,transparent 100%);
+        transparent 0%,rgba(0,0,0,0.9) 10%,rgba(0,0,0,0.9) 90%,transparent 100%);
       mask-image:linear-gradient(to bottom,
-        transparent 0%,rgba(0,0,0,0.75) 14%,rgba(0,0,0,0.75) 86%,transparent 100%);
+        transparent 0%,rgba(0,0,0,0.9) 10%,rgba(0,0,0,0.9) 90%,transparent 100%);
     }
     @keyframes gridDrift{
       0%  {transform:translateY(0)}
       100%{transform:translateY(64px)}
+    }
+    /* Aurora sweep — horizontal light bar sliding across */
+    #bg-aurora{
+      position:absolute;inset:0;pointer-events:none;will-change:transform,opacity;
+      background:linear-gradient(105deg,
+        transparent 30%,
+        rgba(57,168,255,0.07) 45%,
+        rgba(123,60,255,0.10) 55%,
+        rgba(255,58,140,0.06) 62%,
+        transparent 75%);
+      animation:auroraSweep 8s ease-in-out infinite;
+    }
+    @keyframes auroraSweep{
+      0%  {transform:translateX(-60%) skewX(-8deg);opacity:0}
+      20% {opacity:1}
+      80% {opacity:1}
+      100%{transform:translateX(60%)  skewX(-8deg);opacity:0}
     }
 
     /* ── Layer 3: canvas — particles (JS-driven) ───────── */
@@ -174,7 +222,7 @@
 
     /* ── Reduced-motion ─────────────────────────────────── */
     @media(prefers-reduced-motion:reduce){
-      .bg-blob{animation:none!important}
+      .bg-blob,#bg-aurora{animation:none!important}
       #bg-grid{animation:none!important}
       #bg-canvas{display:none}
     }
@@ -433,7 +481,14 @@
     /* ═══ PROJECTS ═══ */
     #projects{background:var(--bg2)}
     .projects-header{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;flex-wrap:wrap;margin-bottom:3.5rem}
-    .projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+    .projects-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1.25rem}
+    /* 3 cartes par ligne → chacune span 2 colonnes */
+    .proj{grid-column:span 2}
+    /* 4e et 5e cartes : centrées sur la 2e ligne */
+    @media(min-width:641px){
+      .proj.d4{grid-column:2/4}
+      .proj.d5{grid-column:4/6}
+    }
 
     .proj{
       border-radius:var(--radius2);overflow:hidden;border:1px solid var(--border);
@@ -762,7 +817,8 @@
       padding:1rem 1.5rem;border-top:1px solid var(--border);
       display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
     }
-    .modal-chips{display:flex;gap:0.5rem;flex-wrap:wrap}
+    .modal-prompt{font-size:0.82rem;color:var(--muted2);line-height:1.5}
+    .modal-prompt strong{color:var(--text);font-weight:700}
     @media(max-width:600px){
       .modal-gallery{grid-template-columns:1fr}
       .modal-gallery img.full{grid-column:1}
@@ -960,7 +1016,9 @@
       .svc.featured{grid-column:span 1;grid-template-columns:1fr;gap:1.5rem}
       .svc.featured .svc-visual{display:none}
       .services-grid{grid-template-columns:1fr 1fr}
-      .projects-grid{grid-template-columns:1fr 1fr}
+      .projects-grid{grid-template-columns:repeat(2,1fr)}
+      .proj{grid-column:span 1}
+      .proj.d4,.proj.d5{grid-column:span 1}
       .proof-grid{grid-template-columns:1fr 1fr}
       .why-grid{grid-template-columns:repeat(2,1fr)}
     }
@@ -984,7 +1042,10 @@
     }
     @media(max-width:640px){
       section{padding:56px max(24px,5%)}
-      .projects-grid,.services-grid,.proof-grid,.why-grid{grid-template-columns:1fr}
+      .projects-grid{grid-template-columns:1fr}
+      .proj{grid-column:span 1}
+      .proj.d4,.proj.d5{grid-column:span 1}
+      .services-grid,.proof-grid,.why-grid{grid-template-columns:1fr}
       .svc.featured{grid-column:span 1}
       .frow{grid-template-columns:1fr}
       .hero-metrics{grid-template-columns:repeat(2,1fr)}
@@ -1010,8 +1071,11 @@
     <div class="bg-blob bb-blue"></div>
     <div class="bg-blob bb-purple"></div>
     <div class="bg-blob bb-mid"></div>
+    <div class="bg-blob bb-rose"></div>
+    <div class="bg-blob bb-cyan"></div>
   </div>
-  <div id="bg-grid"></div><!-- CSS tech grid, slow drift -->
+  <div id="bg-grid"></div><!-- CSS tech grid, drift -->
+  <div id="bg-aurora"></div><!-- aurora sweep -->
   <canvas id="bg-canvas"></canvas><!-- particles -->
   <!-- vignette lives in #bg-wrap::after — no extra div needed -->
 </div>
@@ -1292,7 +1356,7 @@
   <div class="projects-grid">
 
     <!-- Projet réel 1 — remplace "site1.jpg" par ton fichier -->
-    <div class="proj reveal d1">
+    <div class="proj reveal d1" onclick="openModal('mecton')" style="cursor:pointer">
       <div class="proj-screen">
         <div class="screen-real">
           <div class="screen-nav">
@@ -1317,7 +1381,7 @@
     </div>
 
     <!-- Projet réel 2 — remplace "site2.jpg" par ton fichier -->
-    <div class="proj reveal d2">
+    <div class="proj reveal d2" onclick="openModal('osalondeli')" style="cursor:pointer">
       <div class="proj-screen">
         <div class="screen-real">
           <div class="screen-nav">
@@ -1342,7 +1406,7 @@
     </div>
 
     <!-- Projet réel 3 — plombier -->
-    <div class="proj reveal d3">
+    <div class="proj reveal d3" onclick="openModal('plombier')" style="cursor:pointer">
       <div class="proj-screen">
         <div class="screen-real">
           <div class="screen-nav">
@@ -1359,6 +1423,57 @@
         </div>
         <div class="proj-name">Aquafix</div>
         <p class="proj-desc">Concept de site vitrine pour artisan plombier — présentation des services, formulaire de devis rapide et optimisation pour les recherches locales.</p>
+        <div class="proj-chips">
+          <span class="proj-cta">Voir le design <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          <span class="proj-eye"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Cliquer pour explorer</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Projet 4 — Restaurant de luxe -->
+    <div class="proj reveal d4" onclick="openModal('maisondoree')" style="cursor:pointer">
+      <div class="proj-screen">
+        <div class="screen-real">
+          <div class="screen-nav">
+            <div class="scr-dot r"></div><div class="scr-dot y"></div><div class="scr-dot g"></div>
+            <div class="scr-url"></div>
+          </div>
+          <img src="resto.png" alt="Maison Dorée — Restaurant de luxe" class="screen-img"/>
+        </div>
+      </div>
+      <div class="proj-info">
+        <div class="proj-meta">
+          <span class="proj-cat">Restaurant gastronomique</span>
+          <span class="proj-result">Concept Design</span>
+        </div>
+        <div class="proj-name">Maison Dorée</div>
+        <p class="proj-desc">Concept de site vitrine pour restaurant gastronomique — ambiance luxe, menu interactif et réservation de table en ligne.</p>
+        <div class="proj-chips">
+          <span class="proj-cta">Voir le design <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          <span class="proj-eye"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Cliquer pour explorer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projet 5 — Spa & Bien-être -->
+    <div class="proj reveal d5" onclick="openModal('serenityspa')" style="cursor:pointer">
+      <div class="proj-screen">
+        <div class="screen-real">
+          <div class="screen-nav">
+            <div class="scr-dot r"></div><div class="scr-dot y"></div><div class="scr-dot g"></div>
+            <div class="scr-url"></div>
+          </div>
+          <img src="spa.png" alt="Serenity Spa — Institut bien-être" class="screen-img"/>
+        </div>
+      </div>
+      <div class="proj-info">
+        <div class="proj-meta">
+          <span class="proj-cat">Institut spa & bien-être</span>
+          <span class="proj-result">Concept Design</span>
+        </div>
+        <div class="proj-name">Serenity Spa</div>
+        <p class="proj-desc">Concept de site vitrine pour institut spa — design épuré et apaisant, galerie de soins et prise de rendez-vous en ligne intégrée.</p>
         <div class="proj-chips">
           <span class="proj-cta">Voir le design <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           <span class="proj-eye"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Cliquer pour explorer</span>
@@ -1758,8 +1873,8 @@
     </div>
     <div class="modal-gallery" id="modal-gallery"></div>
     <div class="modal-footer">
-      <div class="modal-chips" id="modal-chips"></div>
-      <a href="#contact" class="btn-primary" onclick="closeModal()" style="font-size:0.82rem;padding:0.55rem 1.25rem">Créer mon site →</a>
+      <div class="modal-prompt"><span id="modal-tagline"></span></div>
+      <a href="#contact" class="btn-primary" onclick="closeModal()" style="font-size:0.82rem;padding:0.55rem 1.25rem;white-space:nowrap">Démarrer mon projet →</a>
     </div>
   </div>
 </div>
@@ -1879,32 +1994,32 @@ const projects = {
   mecton: {
     title: 'MECTON',
     cat: 'Salon homme & Barbier',
-    chips: ['Design UI/UX','Booking en ligne','SEO Local'],
-    images: [
-      {src:'mecton.png', full:true},
-      {src:'mecton-2.png', full:false},
-      {src:'mecton-3.png', full:false},
-    ]
+    tagline: 'Un style sombre et masculin qui inspire confiance avant même le premier rendez-vous.',
+    images: [{src:'mecton.png',full:true},{src:'mecton-2.png',full:false},{src:'mecton-3.png',full:false}]
   },
   osalondeli: {
     title: "O'Salon d'Elisa",
     cat: 'Salon de coiffure',
-    chips: ['Design UI/UX','Réservation','SEO Local'],
-    images: [
-      {src:'osalondeli.png', full:true},
-      {src:'osalondeli-2.png', full:false},
-      {src:'osalondeli-3.png', full:false},
-    ]
+    tagline: 'Un site doux et élégant, fidèle à l\'image de votre salon — et qui remplit votre agenda.',
+    images: [{src:'osalondeli.png',full:true},{src:'osalondeli-2.png',full:false},{src:'osalondeli-3.png',full:false}]
   },
   plombier: {
     title: 'Aquafix',
     cat: 'Artisan plombier',
-    chips: ['Site vitrine','Formulaire contact','SEO Local'],
-    images: [
-      {src:'plombier.png', full:true},
-      {src:'plombier-2.png', full:false},
-      {src:'plombier-3.png', full:false},
-    ]
+    tagline: 'Simple, rassurant, efficace — exactement ce que cherche un client en urgence.',
+    images: [{src:'plombier.png',full:true},{src:'plombier-2.png',full:false},{src:'plombier-3.png',full:false}]
+  },
+  maisondoree: {
+    title: 'Maison Dorée',
+    cat: 'Restaurant gastronomique',
+    tagline: 'L\'élégance gastronomique transcrite en expérience digitale — pour des tables toujours réservées.',
+    images: [{src:'resto.png',full:true}]
+  },
+  serenityspa: {
+    title: 'Serenity Spa',
+    cat: 'Institut spa & bien-être',
+    tagline: 'Un voyage visuel qui commence bien avant la visite — et qui convertit les curieux en clients fidèles.',
+    images: [{src:'spa.png',full:true}]
   }
 };
 
@@ -1912,11 +2027,11 @@ function openModal(key) {
   const p = projects[key]; if(!p) return;
   document.getElementById('modal-title-text').textContent = p.title;
   document.getElementById('modal-cat-text').textContent = p.cat;
+  document.getElementById('modal-tagline').textContent = p.tagline || '';
   const gallery = document.getElementById('modal-gallery');
   gallery.innerHTML = p.images.map(img =>
     `<img src="${img.src}" alt="${p.title}" class="${img.full?'full':''}" loading="lazy" onerror="this.style.display='none'">`
   ).join('');
-  document.getElementById('modal-chips').innerHTML = p.chips.map(c=>`<span class="chip">${c}</span>`).join('');
   const modal = document.getElementById('proj-modal');
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1930,12 +2045,6 @@ function closeModalOnBg(e) {
 }
 document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
 
-// Attach click to project cards
-const projCards = document.querySelectorAll('.proj');
-const projKeys = ['mecton','osalondeli','plombier'];
-projCards.forEach((card, i) => {
-  if(projKeys[i]) card.addEventListener('click', () => openModal(projKeys[i]));
-});
 
 // ── Form submit → Formspree
 async function submitForm(e) {
