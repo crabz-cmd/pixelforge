@@ -1599,8 +1599,9 @@
       .btn-nav{padding:0.45rem 0.85rem;font-size:0.75rem;white-space:nowrap}
       #nav.scrolled .btn-nav{padding:0.35rem 0.7rem;font-size:0.7rem}
 
-      /* ── Logo size fix on mobile scrolled ── */
-      #nav.scrolled .logo-img{height:42px}
+      /* ── Logo size fix on mobile (comme PC) ── */
+      .logo-img{height:90px}
+      #nav.scrolled .logo-img{height:70px}
 
       /* ── Burger toggle stability ── */
       .burger{position:relative;z-index:1001;cursor:pointer;pointer-events:auto}
@@ -1608,8 +1609,9 @@
       /* ── Right section stability on scroll ── */
       #nav.scrolled .nav-right{display:flex;align-items:center;gap:10px}
 
-      /* ── Mobile menu z-index ── */
-      .nav-center.open{z-index:1100}
+      /* ── Mobile menu z-index fix ── */
+      .nav-center.open{z-index:1200}
+    }
 
       /* ── Modal box ── */
       .modal-box{
@@ -1632,6 +1634,10 @@
 
       /* ── BA slider height on mobile ── */
       .ba-slider{height:clamp(220px,38vh,320px)}
+
+      /* ── Fix touch scroll sur mobile ── */
+      .ba-slider{touch-action:pan-y;user-select:text;-webkit-user-select:text}
+      .ba-after img,.ba-before img{pointer-events:auto}
 
       /* ── Scroll hint ── */
       .modal-scroll-hint{padding:0.6rem;font-size:0.74rem}
@@ -2600,11 +2606,19 @@ window.addEventListener('scroll', () => {
 function toggleNav() {
   const links = document.getElementById('navLinks');
   const spans = document.querySelectorAll('.burger span');
+  const nav = document.getElementById('nav');
+  const isScrolled = nav.classList.contains('scrolled');
+
   links.classList.toggle('open');
   const open = links.classList.contains('open');
   spans[0].style.transform = open ? 'rotate(45deg) translate(5px,5px)' : '';
   spans[1].style.opacity = open ? '0' : '';
   spans[2].style.transform = open ? 'rotate(-45deg) translate(5px,-5px)' : '';
+
+  // Ajuster la position du menu en fonction de l'état de scroll
+  if (open) {
+    links.style.top = isScrolled ? '72px' : '90px';
+  }
 }
 document.querySelectorAll('#navLinks a').forEach(a => a.addEventListener('click', () => {
   document.getElementById('navLinks').classList.remove('open');
