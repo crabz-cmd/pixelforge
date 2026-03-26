@@ -1169,6 +1169,8 @@
       opacity:0;pointer-events:none;
       transition:opacity 0.3s ease;
       cursor:zoom-out;
+      overscroll-behavior:none;
+      touch-action:none;
     }
     #img-zoom-overlay.active{opacity:1;pointer-events:auto}
     #img-zoom-overlay img{
@@ -1177,6 +1179,9 @@
       box-shadow:0 40px 100px rgba(0,0,0,0.6),0 0 0 1px rgba(200,64,255,0.12);
       transform:scale(0.88);
       transition:transform 0.35s cubic-bezier(.25,.8,.25,1);
+      touch-action:pinch-zoom;
+      user-select:none;
+      -webkit-user-select:none;
     }
     #img-zoom-overlay.active img{transform:scale(1)}
 
@@ -1564,6 +1569,12 @@
     @media(max-width:768px){
       /* Prevent any element from causing horizontal overflow */
       section,#proj-modal,.modal-box,#all-projects-overlay{max-width:100vw}
+
+      /* ── Navbar ── */
+      #nav{max-width:100vw;overflow:hidden}
+      .nav-right{max-width:100%;overflow:hidden;display:flex;align-items:center;gap:6px;flex-shrink:0}
+      .btn-nav{padding:0.45rem 0.85rem;font-size:0.75rem;white-space:nowrap}
+      #nav.scrolled .btn-nav{padding:0.35rem 0.7rem;font-size:0.7rem}
 
       /* ── Modal box ── */
       .modal-box{
@@ -2777,10 +2788,18 @@ function openZoom(src) {
   const overlay = document.getElementById('img-zoom-overlay');
   document.getElementById('zoom-img').src = src;
   requestAnimationFrame(() => overlay.classList.add('active'));
+  // Prevent pull-to-refresh while zoom overlay is open
+  document.body.style.overscrollBehavior = 'none';
 }
 function closeZoom() {
   document.getElementById('img-zoom-overlay').classList.remove('active');
+  document.body.style.overscrollBehavior = '';
 }
+// Block touchmove on zoom overlay to prevent browser pull-to-refresh / crash
+document.getElementById('img-zoom-overlay').addEventListener('touchmove', function(e) {
+  // Allow pinch-zoom (2 fingers) but stop single-finger pull-to-refresh
+  if (e.touches.length < 2) e.preventDefault();
+}, { passive: false });
 
 // ── Navigate between projects with blur+speed animation ──
 function navigateProject(dir) {
