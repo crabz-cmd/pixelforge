@@ -906,7 +906,8 @@
       align-items:center;justify-content:center;padding:1.25rem;
     }
     #proj-modal.open{display:flex}
-    @keyframes modalIn{from{opacity:0;transform:scale(0.92) translateY(28px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+    @keyframes modalIn{from{opacity:0;transform:scale(0.92) translateY(28px);filter:none}to{opacity:1;transform:none;filter:none}}
+    @keyframes modalOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(0.92) translateY(20px)}}
     .modal-box{
       background:rgba(20,16,32,0.72);
       backdrop-filter:blur(24px) saturate(180%);
@@ -917,6 +918,9 @@
       box-shadow:0 50px 130px rgba(0,0,0,0.75),0 0 0 1px rgba(200,64,255,0.10);
       animation:modalIn 0.4s cubic-bezier(.25,.8,.25,1);
       transition:transform 0.6s cubic-bezier(.25,.8,.25,1),opacity 0.5s ease;
+    }
+    .modal-box.closing{
+      animation:modalOut 0.4s cubic-bezier(.25,.8,.25,1) forwards;
     }
     /* ── Barrel 3D — whole modal slides off-screen ── */
     .modal-box.barrel-out-left{transform:perspective(1200px) rotateY(35deg) translateX(-60vw) translateZ(250px);opacity:0}
@@ -1173,6 +1177,9 @@
       touch-action:none;
     }
     #img-zoom-overlay.active{opacity:1;pointer-events:auto}
+    #img-zoom-overlay.closing{
+      animation:fadeOut 0.3s cubic-bezier(.25,.8,.25,1) forwards;
+    }
     #img-zoom-overlay img{
       max-width:92%;max-height:92%;
       border-radius:14px;
@@ -1194,6 +1201,9 @@
       overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(200,64,255,0.3) transparent;
     }
     #all-projects-overlay.open{display:flex}
+    #all-projects-overlay.closing{
+      animation:fadeOut 0.3s cubic-bezier(.25,.8,.25,1) forwards;
+    }
     .allproj-header{
       position:sticky;top:0;z-index:10;
       display:flex;align-items:center;justify-content:space-between;
@@ -1505,6 +1515,19 @@
     .reveal-left.in{opacity:1;transform:none}
     .reveal-right{opacity:0;transform:translateX(28px);transition:opacity 0.7s cubic-bezier(.25,.8,.25,1),transform 0.7s cubic-bezier(.25,.8,.25,1)}
     .reveal-right.in{opacity:1;transform:none}
+
+    /* ── Fade out animation for overlays ── */
+    @keyframes fadeOut{
+      from{
+        opacity:1;
+        transform:scale(1);
+      }
+      to{
+        opacity:0;
+        transform:scale(0.98);
+      }
+    }
+
     /* Fallback: if JS fails or is slow, show everything */
     @media(prefers-reduced-motion:reduce){
       .reveal,.reveal-left,.reveal-right{opacity:1;transform:none;transition:none}
@@ -1575,6 +1598,18 @@
       .nav-right{max-width:100%;overflow:hidden;display:flex;align-items:center;gap:6px;flex-shrink:0}
       .btn-nav{padding:0.45rem 0.85rem;font-size:0.75rem;white-space:nowrap}
       #nav.scrolled .btn-nav{padding:0.35rem 0.7rem;font-size:0.7rem}
+
+      /* ── Logo size fix on mobile scrolled ── */
+      #nav.scrolled .logo-img{height:42px}
+
+      /* ── Burger toggle stability ── */
+      .burger{position:relative;z-index:1001;cursor:pointer;pointer-events:auto}
+
+      /* ── Right section stability on scroll ── */
+      #nav.scrolled .nav-right{display:flex;align-items:center;gap:10px}
+
+      /* ── Mobile menu z-index ── */
+      .nav-center.open{z-index:1100}
 
       /* ── Modal box ── */
       .modal-box{
@@ -2716,8 +2751,12 @@ function openAllProjects() {
   document.body.style.overflow = 'hidden';
 }
 function closeAllProjects() {
-  document.getElementById('all-projects-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+  const overlay = document.getElementById('all-projects-overlay');
+  overlay.classList.add('closing');
+  setTimeout(() => {
+    overlay.classList.remove('open', 'closing');
+    document.body.style.overflow = '';
+  }, 300);
 }
 
 // ── Before/After slider — dual clip-path (no overlap possible) ──
@@ -2792,8 +2831,12 @@ function openZoom(src) {
   document.body.style.overscrollBehavior = 'none';
 }
 function closeZoom() {
-  document.getElementById('img-zoom-overlay').classList.remove('active');
-  document.body.style.overscrollBehavior = '';
+  const overlay = document.getElementById('img-zoom-overlay');
+  overlay.classList.add('closing');
+  setTimeout(() => {
+    overlay.classList.remove('active', 'closing');
+    document.body.style.overscrollBehavior = '';
+  }, 300);
 }
 // Block touchmove on zoom overlay to prevent browser pull-to-refresh / crash
 document.getElementById('img-zoom-overlay').addEventListener('touchmove', function(e) {
@@ -2831,9 +2874,14 @@ function openModal(key) {
   document.body.style.overflow = 'hidden';
 }
 function closeModal() {
-  document.getElementById('proj-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  baIsDragging = false;
+  const modalBox = document.querySelector('.modal-box');
+  modalBox.classList.add('closing');
+  setTimeout(() => {
+    document.getElementById('proj-modal').classList.remove('open');
+    document.body.style.overflow = '';
+    baIsDragging = false;
+    modalBox.classList.remove('closing');
+  }, 400);
 }
 function closeModalOnBg(e) {
   if (e.target === document.getElementById('proj-modal')) closeModal();
