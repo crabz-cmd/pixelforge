@@ -603,9 +603,18 @@
       position:relative;
       box-shadow:0 8px 32px rgba(0,0,0,0.45),0 0 0 1px rgba(200,64,255,0.12),inset 0 1px 0 rgba(255,255,255,0.06);
     }
-    .proj::before{content:'';position:absolute;inset:0;border-radius:var(--radius2);border:1px solid transparent;background:var(--grad) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;opacity:0;transition:opacity 0.4s;z-index:1;pointer-events:none}
+    .proj::before{
+      content:'';position:absolute;inset:0;border-radius:var(--radius2);
+      border:2px solid transparent;
+      background:conic-gradient(from var(--proj-angle,0deg),transparent 0deg,rgba(200,64,255,0) 60deg,#C840FF 90deg,#FF3A8C 110deg,rgba(255,58,140,0) 140deg,transparent 200deg) border-box;
+      -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:destination-out;mask-composite:exclude;
+      opacity:0;transition:opacity 0.4s;z-index:1;pointer-events:none;
+    }
     .proj:hover{transform:translateY(-10px);box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 60px rgba(200,64,255,0.18),0 0 0 1px rgba(200,64,255,0.22)}
-    .proj:hover::before{opacity:1}
+    .proj:hover::before{opacity:1;animation:projBorderRotate 2s linear infinite}
+    @property --proj-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+    @keyframes projBorderRotate{to{--proj-angle:360deg}}
 
     .proj-screen{aspect-ratio:16/10;overflow:hidden;position:relative;background:#0a0e16}
 
@@ -1170,6 +1179,84 @@
       transition:transform 0.35s cubic-bezier(.25,.8,.25,1);
     }
     #img-zoom-overlay.active img{transform:scale(1)}
+
+    /* ═══ ALL PROJECTS OVERLAY ═══ */
+    #all-projects-overlay{
+      position:fixed;inset:0;z-index:8500;
+      background:rgba(4,7,14,0.97);
+      backdrop-filter:blur(24px);
+      display:none;flex-direction:column;
+      overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(200,64,255,0.3) transparent;
+    }
+    #all-projects-overlay.open{display:flex}
+    .allproj-header{
+      position:sticky;top:0;z-index:10;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1.5rem 3rem;
+      background:rgba(4,7,14,0.85);backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .allproj-title{
+      font-size:1.4rem;font-weight:800;letter-spacing:-0.02em;
+    }
+    .allproj-title span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .allproj-close{
+      width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.04);color:var(--muted2);cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+      transition:background 0.2s,color 0.2s;
+    }
+    .allproj-close:hover{background:rgba(255,255,255,0.09);color:var(--text)}
+    .allproj-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:2rem;
+      padding:2.5rem 3rem 4rem;
+    }
+    .allproj-card{
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(200,64,255,0.15);
+      border-radius:18px;overflow:hidden;cursor:pointer;
+      position:relative;
+      transition:transform 0.35s ease,border-color 0.3s,box-shadow 0.35s;
+    }
+    .allproj-card::before{
+      content:'';position:absolute;inset:0;border-radius:18px;
+      border:2px solid transparent;
+      background:conic-gradient(from var(--proj-angle,0deg),transparent 0deg,rgba(200,64,255,0) 60deg,#C840FF 90deg,#FF3A8C 110deg,rgba(255,58,140,0) 140deg,transparent 200deg) border-box;
+      -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:destination-out;mask-composite:exclude;
+      opacity:0;transition:opacity 0.4s;z-index:1;pointer-events:none;
+    }
+    .allproj-card:hover{
+      transform:translateY(-6px) scale(1.02);
+      box-shadow:0 30px 80px rgba(0,0,0,0.5),0 0 40px rgba(200,64,255,0.15);
+    }
+    .allproj-card:hover::before{opacity:1;animation:projBorderRotate 2s linear infinite}
+    .allproj-card-img{
+      width:100%;aspect-ratio:16/10;object-fit:cover;display:block;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .allproj-card-body{padding:1.25rem 1.5rem}
+    .allproj-card-cat{
+      font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+      color:var(--a1);margin-bottom:0.4rem;
+    }
+    .allproj-card-name{font-size:1.1rem;font-weight:800;margin-bottom:0.5rem}
+    .allproj-card-tag{
+      font-size:0.78rem;color:var(--muted2);line-height:1.5;
+    }
+    .allproj-card-footer{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0.75rem 1.5rem;border-top:1px solid rgba(255,255,255,0.04);
+    }
+    .allproj-card-loc{font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:0.4rem}
+    .allproj-card-badge{
+      font-size:0.62rem;font-weight:700;padding:3px 10px;border-radius:100px;
+      background:rgba(200,64,255,0.08);border:1px solid rgba(200,64,255,0.18);color:var(--a1);
+    }
+    @media(max-width:640px){
+      .allproj-header{padding:1.25rem 1.5rem}
+      .allproj-grid{grid-template-columns:1fr;padding:1.5rem;gap:1.5rem}
+    }
 
     /* ═══ WHY ═══ */
     #why{background:var(--bg);scroll-margin-top:70px}
@@ -1747,7 +1834,7 @@
       <span class="sec-label">Réalisations</span>
       <h2 class="sec-title">Nos <span class="grad-text">concepts de design</span></h2>
     </div>
-    <a href="#contact" class="btn-hero-ghost reveal" style="flex-shrink:0">Voir tous les projets →</a>
+    <a href="javascript:void(0)" onclick="openAllProjects()" class="btn-hero-ghost reveal" style="flex-shrink:0">Voir tous les projets →</a>
   </div>
   <div class="projects-grid">
 
@@ -2390,6 +2477,15 @@
   <a href="#contact">🚀 Demander un devis <span class="glow-word">GRATUIT</span></a>
 </div>
 
+<!-- ALL PROJECTS OVERLAY -->
+<div id="all-projects-overlay">
+  <div class="allproj-header">
+    <div class="allproj-title">Tous nos <span>concepts de design</span></div>
+    <button class="allproj-close" onclick="closeAllProjects()">✕</button>
+  </div>
+  <div class="allproj-grid" id="allproj-grid"></div>
+</div>
+
 <!-- IMAGE ZOOM OVERLAY -->
 <div id="img-zoom-overlay" onclick="closeZoom()">
   <img id="zoom-img" src="" alt="Zoom"/>
@@ -2532,6 +2628,35 @@ const projects = {
   }
 };
 
+// ── All Projects overlay ──
+function openAllProjects() {
+  const grid = document.getElementById('allproj-grid');
+  grid.innerHTML = projectKeys.map(key => {
+    const p = projects[key];
+    return `<div class="allproj-card" onclick="closeAllProjects();openModal('${key}')">
+      <img class="allproj-card-img" src="${p.after}" alt="${p.title}" loading="lazy"/>
+      <div class="allproj-card-body">
+        <div class="allproj-card-cat">${p.cat}</div>
+        <div class="allproj-card-name">${p.title}</div>
+        <div class="allproj-card-tag">${p.tagline}</div>
+      </div>
+      <div class="allproj-card-footer">
+        <div class="allproj-card-loc">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${p.location || ''}
+        </div>
+        <span class="allproj-card-badge">${p.result || 'Concept Design'}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('all-projects-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAllProjects() {
+  document.getElementById('all-projects-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 // ── Before/After slider — dual clip-path (no overlap possible) ──
 let baIsDragging = false;
 const baSlider = document.getElementById('baSlider');
@@ -2643,7 +2768,7 @@ function closeModalOnBg(e) {
   if (e.target === document.getElementById('proj-modal')) closeModal();
 }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeZoom(); closeModal(); }
+  if (e.key === 'Escape') { closeZoom(); closeAllProjects(); closeModal(); }
   if (e.key === 'ArrowLeft'  && document.getElementById('proj-modal').classList.contains('open')) navigateProject(-1);
   if (e.key === 'ArrowRight' && document.getElementById('proj-modal').classList.contains('open')) navigateProject(1);
 });
