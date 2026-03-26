@@ -1556,6 +1556,58 @@
         opacity:1 !important;transform:none !important;transition:none !important;
       }
     }
+
+    /* ═══ MOBILE SAFETY (≤768px) — desktop untouched ═══ */
+    html,body{overflow-x:hidden;width:100%;max-width:100%}
+    img,video{max-width:100%;height:auto}
+
+    @media(max-width:768px){
+      /* Prevent any element from causing horizontal overflow */
+      section,#proj-modal,.modal-box,#all-projects-overlay{max-width:100vw}
+
+      /* ── Modal box ── */
+      .modal-box{
+        border-radius:16px;
+        max-height:96vh;
+      }
+      .modal-header{padding:1rem 1.25rem}
+      .modal-meta{display:none}
+      .modal-body{padding:1rem}
+
+      /* ── Modal footer: stack vertically ── */
+      .modal-footer{
+        flex-direction:column;
+        align-items:stretch;
+        gap:0.75rem;
+        padding:1rem 1.25rem;
+      }
+      .modal-prompt{max-width:100%;font-size:0.82rem}
+      .modal-cta{width:100%;justify-content:center;text-align:center}
+
+      /* ── BA slider height on mobile ── */
+      .ba-slider{height:clamp(220px,38vh,320px)}
+
+      /* ── Scroll hint ── */
+      .modal-scroll-hint{padding:0.6rem;font-size:0.74rem}
+
+      /* ── Navigation arrows: tighter ── */
+      .modal-nav{width:38px;height:38px}
+      .modal-nav-prev{left:0.25rem}
+      .modal-nav-next{right:0.25rem}
+
+      /* ── All-projects overlay ── */
+      .allproj-header{padding:1rem 1.25rem}
+      .allproj-grid{grid-template-columns:1fr;padding:1.25rem;gap:1.25rem}
+
+      /* ── Projects header: stack ── */
+      .projects-header{flex-direction:column;align-items:flex-start;gap:1rem}
+
+      /* ── Contact grid ── */
+      .contact-grid{grid-template-columns:1fr}
+
+      /* ── Ticker: prevent overflow ── */
+      .ticker-track{animation-duration:25s}
+    }
   </style>
 </head>
 <body>
