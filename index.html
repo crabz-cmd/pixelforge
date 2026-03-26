@@ -465,6 +465,37 @@
     .t-star{color:var(--a1);font-size:0.7rem}
     @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
+    /* ═══ MOBILE SECTIONS NAVIGATION ═══ */
+    .mobile-sections-nav{
+      display:none;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:14px;
+      padding:16px 20px;
+      background:var(--bg2);
+      border-bottom:1px solid var(--border);
+      position:relative;
+    }
+    .mobile-sections-nav a{
+      padding:10px 16px;
+      border-radius:20px;
+      font-size:14px;
+      font-weight:500;
+      color:var(--text);
+      text-decoration:none;
+      background:rgba(255,255,255,0.05);
+      backdrop-filter:blur(8px);
+      transition:all 0.2s;
+      border:1px solid rgba(255,255,255,0.04);
+    }
+    .mobile-sections-nav a:hover{
+      background:rgba(255,255,255,0.12);
+      border-color:rgba(255,255,255,0.1);
+    }
+    .mobile-sections-nav a:active{
+      transform:scale(0.96);
+    }
+
     /* ═══ SECTIONS ═══ */
     section{padding:80px max(24px,5%);position:relative}
     .sec-label{
@@ -1607,14 +1638,17 @@
       .logo-img{height:90px}
       #nav.scrolled .logo-img{height:70px}
 
-      /* ── Burger toggle stability ── */
-      .burger{position:relative;z-index:1001;cursor:pointer;pointer-events:auto}
+      /* ── Burger menu hidden (replaced by sections navigation) ── */
+      .burger,.mobile-menu-close{display:none !important}
 
       /* ── Right section stability on scroll ── */
       #nav.scrolled .navbar-content.nav-right{display:flex;align-items:center;gap:10px}
 
       /* ── Mobile menu z-index fix ── */
       .nav-center.open{z-index:1200}
+
+      /* ── Mobile sections navigation visible on mobile ── */
+      .mobile-sections-nav{display:flex}
     }
 
       /* ── Modal box ── */
@@ -1791,6 +1825,15 @@
     <span class="ticker-item"><span class="t-star">✦</span> Support inclus 3 mois</span>
     <span class="ticker-item"><span class="t-star">✦</span> Satisfaction garantie</span>
   </div>
+</div>
+
+<!-- MOBILE SECTIONS NAVIGATION (visible only on mobile) -->
+<div class="mobile-sections-nav">
+  <a href="#services">Services</a>
+  <a href="#projects">Projets</a>
+  <a href="#process">Processus</a>
+  <a href="#why">Avantages</a>
+  <a href="#contact">Contact</a>
 </div>
 
 <!-- SERVICES -->
