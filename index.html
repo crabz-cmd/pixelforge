@@ -897,16 +897,24 @@
       align-items:center;justify-content:center;padding:1.25rem;
     }
     #proj-modal.open{display:flex}
-    @keyframes modalIn{from{opacity:0;transform:scale(0.94) translateY(20px)}to{opacity:1;transform:none}}
+    @keyframes modalIn{from{opacity:0;transform:scale(0.92) translateY(28px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
     .modal-box{
-      background:linear-gradient(160deg,#141020 0%,#0D0812 100%);
-      border:1px solid rgba(255,255,255,0.09);
+      background:rgba(20,16,32,0.72);
+      backdrop-filter:blur(24px) saturate(180%);
+      border:1px solid rgba(255,255,255,0.10);
       border-radius:24px;
       width:100%;max-width:960px;max-height:93vh;
       overflow:hidden;display:flex;flex-direction:column;
-      box-shadow:0 50px 130px rgba(0,0,0,0.75),0 0 0 1px rgba(200,64,255,0.07);
-      animation:modalIn 0.35s cubic-bezier(.25,.8,.25,1);
+      box-shadow:0 50px 130px rgba(0,0,0,0.75),0 0 0 1px rgba(200,64,255,0.10);
+      animation:modalIn 0.4s cubic-bezier(.25,.8,.25,1);
+      transition:transform 0.6s cubic-bezier(.25,.8,.25,1),opacity 0.5s ease;
     }
+    /* ── Barrel 3D — whole modal slides off-screen ── */
+    .modal-box.barrel-out-left{transform:perspective(1200px) rotateY(35deg) translateX(-60vw) translateZ(250px);opacity:0}
+    .modal-box.barrel-out-right{transform:perspective(1200px) rotateY(-35deg) translateX(60vw) translateZ(250px);opacity:0}
+    .modal-box.barrel-in-left{transform:perspective(1200px) rotateY(-35deg) translateX(60vw) translateZ(250px);opacity:0;transition:none}
+    .modal-box.barrel-in-right{transform:perspective(1200px) rotateY(35deg) translateX(-60vw) translateZ(250px);opacity:0;transition:none}
+
     .modal-header{
       display:flex;align-items:center;justify-content:space-between;
       padding:1.25rem 1.75rem;border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0;
@@ -915,6 +923,14 @@
     .modal-cat{
       font-size:0.68rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;
       color:var(--a1);margin-top:4px;
+    }
+    .modal-meta{
+      font-size:0.78rem;color:var(--muted);margin-top:6px;
+      display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;
+    }
+    .modal-meta-tag{
+      font-size:0.66rem;font-weight:700;padding:2px 10px;border-radius:100px;
+      background:rgba(200,64,255,0.08);border:1px solid rgba(200,64,255,0.18);color:var(--a1);
     }
     .modal-close{
       width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
@@ -947,8 +963,8 @@
       transform:translateY(-50%) scale(1.08);
     }
     .modal-nav svg{pointer-events:none}
-    .modal-nav-prev{left:max(0.75rem, calc(50% - 530px))}
-    .modal-nav-next{right:max(0.75rem, calc(50% - 530px))}
+    .modal-nav-prev{left:max(0.75rem, calc(50% - 590px))}
+    .modal-nav-next{right:max(0.75rem, calc(50% - 590px))}
     /* Project counter */
     .modal-counter{
       position:absolute;bottom:1.25rem;left:50%;transform:translateX(-50%);
@@ -962,34 +978,29 @@
       width:20px;border-radius:3px;
       background:var(--grad);box-shadow:0 0 8px rgba(200,64,255,0.6);
     }
-    /* Body transition animation */
+    /* Body layout */
     .modal-body{flex:1;overflow-y:auto;padding:1.75rem;scrollbar-width:thin;scrollbar-color:rgba(200,64,255,0.3) transparent;
-      transition:transform 0.35s cubic-bezier(.25,.8,.25,1),filter 0.35s ease,opacity 0.35s ease;
+      display:flex;flex-direction:column;
     }
     .modal-body::-webkit-scrollbar{width:4px}
     .modal-body::-webkit-scrollbar-thumb{background:rgba(200,64,255,0.3);border-radius:4px}
-    .modal-body.slide-out-left{transform:translateX(-80px);filter:blur(10px);opacity:0}
-    .modal-body.slide-out-right{transform:translateX(80px);filter:blur(10px);opacity:0}
-    .modal-body.slide-in-left{transform:translateX(80px);filter:blur(10px);opacity:0;transition:none}
-    .modal-body.slide-in-right{transform:translateX(-80px);filter:blur(10px);opacity:0;transition:none}
 
     /* ── Before / After Slider ── */
-    .ba-wrap{position:relative;margin-bottom:2.25rem}
+    .ba-wrap{position:relative;margin-bottom:1rem;flex:1;min-height:0}
     .ba-slider{
-      position:relative;width:100%;height:420px;
+      position:relative;width:100%;height:clamp(320px, 45vh, 520px);
       border-radius:18px;overflow:hidden;
       cursor:col-resize;user-select:none;-webkit-user-select:none;
       border:1px solid rgba(200,64,255,0.15);
       box-shadow:0 24px 70px rgba(0,0,0,0.55),0 0 0 1px rgba(200,64,255,0.08),inset 0 1px 0 rgba(255,255,255,0.04);
     }
-    .ba-after{position:absolute;inset:0}
-    .ba-after img{width:100%;height:100%;object-fit:cover;pointer-events:none;display:block}
-    /* Before uses mask-image for soft blur-fade instead of hard clip */
-    .ba-before{position:absolute;inset:0}
-    .ba-before img{width:100%;height:100%;object-fit:cover;pointer-events:none;display:block}
+    .ba-after{position:absolute;inset:0;background:#0a0e18;z-index:1}
+    .ba-after img{width:100%;height:100%;object-fit:contain;pointer-events:none;display:block}
+    .ba-before{position:absolute;inset:0;background:#0a0e18;z-index:2}
+    .ba-before img{width:100%;height:100%;object-fit:contain;pointer-events:none;display:block}
     /* Gradient separator line — themed purple→pink, subtle with blur glow */
     .ba-line{
-      position:absolute;top:0;bottom:0;left:50%;
+      position:absolute;top:0;bottom:0;left:50%;z-index:3;
       width:2px;
       background:linear-gradient(to bottom,rgba(200,64,255,0.55),rgba(255,58,140,0.55));
       transform:translateX(-50%);pointer-events:none;
@@ -1018,13 +1029,22 @@
       display:flex;align-items:center;justify-content:center;
       box-shadow:0 4px 24px rgba(200,64,255,0.40),0 0 0 2px rgba(255,255,255,0.10);
       gap:5px;backdrop-filter:blur(6px);
+      animation:pulseHandle 2.2s ease-in-out infinite;
+      transition:box-shadow 0.2s ease;
+    }
+    .ba-handle:hover{
+      box-shadow:0 4px 32px rgba(200,64,255,0.65),0 0 28px rgba(200,64,255,0.5),0 0 0 2px rgba(255,255,255,0.18);
+    }
+    @keyframes pulseHandle{
+      0%,100%{box-shadow:0 4px 24px rgba(200,64,255,0.40),0 0 0 2px rgba(255,255,255,0.10)}
+      50%{box-shadow:0 4px 32px rgba(200,64,255,0.65),0 0 22px rgba(200,64,255,0.5),0 0 0 2px rgba(255,255,255,0.15)}
     }
     .ba-arrow{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent}
     .ba-arrow.left{border-right:7px solid rgba(255,255,255,0.9)}
     .ba-arrow.right{border-left:7px solid rgba(255,255,255,0.9)}
     /* Labels */
     .ba-label{
-      position:absolute;top:1rem;z-index:10;
+      position:absolute;top:1rem;z-index:5;
       font-size:0.65rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;
       padding:0.28rem 0.75rem;border-radius:100px;pointer-events:none;
     }
@@ -1042,7 +1062,7 @@
     /* ── Scroll hint — encourages user to see gallery below ── */
     .modal-scroll-hint{
       display:flex;align-items:center;justify-content:center;gap:0.5rem;
-      padding:0.75rem;margin:-0.5rem 0 1.5rem;cursor:pointer;
+      padding:0.75rem;margin:0.5rem 0 0;cursor:pointer;
       font-size:0.78rem;font-weight:700;color:var(--a1);letter-spacing:0.04em;
       border-radius:12px;border:1px solid rgba(200,64,255,0.15);
       background:rgba(200,64,255,0.04);
@@ -1067,11 +1087,12 @@
       border:1px solid rgba(200,64,255,0.40);
       box-shadow:0 8px 32px rgba(0,0,0,0.55),0 0 0 1px rgba(200,64,255,0.18),0 0 24px rgba(200,64,255,0.10),inset 0 1px 0 rgba(255,255,255,0.07);
       cursor:zoom-in;
-      transition:border-color 0.3s,box-shadow 0.3s;
+      transition:transform 0.4s ease,border-color 0.3s,box-shadow 0.4s;
     }
     .modal-shot:hover{
+      transform:translateY(-4px) scale(1.02);
       border-color:rgba(200,64,255,0.70);
-      box-shadow:0 14px 48px rgba(0,0,0,0.65),0 0 0 1px rgba(200,64,255,0.35),0 0 36px rgba(200,64,255,0.18);
+      box-shadow:0 30px 80px rgba(0,0,0,0.55),0 0 0 1px rgba(200,64,255,0.35),0 0 36px rgba(200,64,255,0.18);
     }
     .modal-shot img{
       width:100%;height:100%;object-fit:cover;display:block;
@@ -1097,14 +1118,58 @@
       display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
       background:rgba(0,0,0,0.15);
     }
-    .modal-prompt{font-size:0.82rem;color:var(--muted2);line-height:1.5;max-width:55%}
+    .modal-prompt{font-size:0.92rem;color:var(--muted2);line-height:1.7;max-width:560px;letter-spacing:-0.01em}
     .modal-prompt strong{color:var(--text);font-weight:700}
+    .modal-cta{
+      font-size:0.84rem;font-weight:700;padding:0.6rem 1.4rem;border-radius:10px;
+      background:var(--grad);color:#fff;border:none;cursor:pointer;text-decoration:none;
+      white-space:nowrap;display:inline-flex;align-items:center;gap:0.4rem;
+      box-shadow:0 0 20px rgba(200,64,255,0.3);
+      transition:all 0.25s ease;
+    }
+    .modal-cta:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 32px rgba(200,64,255,0.5);
+      text-shadow:0 0 8px rgba(200,64,255,0.6);
+    }
 
     @media(max-width:640px){
-      .ba-slider{height:220px}
+      .ba-slider{height:clamp(200px, 35vh, 320px)}
       .modal-shots{grid-template-columns:1fr 1fr}
       .modal-body{padding:1.25rem}
     }
+    @media(max-height:800px){
+      .ba-slider{height:clamp(260px, 40vh, 420px)}
+    }
+
+    /* ── Gallery reveal wrap ── */
+    .modal-gallery-wrap{
+      max-height:0;overflow:hidden;opacity:0;
+      transition:max-height 0.6s cubic-bezier(.25,.8,.25,1),opacity 0.5s ease;
+    }
+    .modal-gallery-wrap.revealed{
+      max-height:800px;opacity:1;
+    }
+
+    /* ═══ IMAGE ZOOM MODAL ═══ */
+    #img-zoom-overlay{
+      position:fixed;inset:0;z-index:10000;
+      background:rgba(4,7,14,0.94);
+      backdrop-filter:blur(12px);
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;
+      transition:opacity 0.3s ease;
+      cursor:zoom-out;
+    }
+    #img-zoom-overlay.active{opacity:1;pointer-events:auto}
+    #img-zoom-overlay img{
+      max-width:92%;max-height:92%;
+      border-radius:14px;
+      box-shadow:0 40px 100px rgba(0,0,0,0.6),0 0 0 1px rgba(200,64,255,0.12);
+      transform:scale(0.88);
+      transition:transform 0.35s cubic-bezier(.25,.8,.25,1);
+    }
+    #img-zoom-overlay.active img{transform:scale(1)}
 
     /* ═══ WHY ═══ */
     #why{background:var(--bg);scroll-margin-top:70px}
@@ -1694,7 +1759,7 @@
             <div class="scr-dot r"></div><div class="scr-dot y"></div><div class="scr-dot g"></div>
             <div class="scr-url"></div>
           </div>
-          <img src="mecton.png" alt="MECTON — Salon Homme & Barbier" class="screen-img"/>
+          <img src="mecton-main.png" alt="MECTON — Salon Homme & Barbier" class="screen-img"/>
         </div>
       </div>
       <div class="proj-info">
@@ -2231,6 +2296,7 @@
       <div>
         <div class="modal-title" id="modal-title-text"></div>
         <div class="modal-cat" id="modal-cat-text"></div>
+        <div class="modal-meta" id="modal-meta-text"></div>
       </div>
       <div style="display:flex;align-items:center;gap:0.75rem">
         <div class="modal-counter" id="modalCounter" style="position:static;transform:none;bottom:auto;left:auto"></div>
@@ -2242,8 +2308,8 @@
       <!-- Before / After slider -->
       <div class="ba-wrap">
         <div class="ba-slider" id="baSlider">
-          <!-- After (bottom layer, always full width) -->
-          <div class="ba-after">
+          <!-- After (bottom layer, clipped from left) -->
+          <div class="ba-after" id="baAfter">
             <img id="baAfterImg" src="" alt="Après"/>
           </div>
           <!-- Before (top layer, clipped from left) -->
@@ -2268,18 +2334,20 @@
         </div>
       </div>
       <!-- Scroll hint to gallery -->
-      <div class="modal-scroll-hint" onclick="this.closest('.modal-body').querySelector('.modal-shots-label').scrollIntoView({behavior:'smooth',block:'start'})">
+      <div class="modal-scroll-hint" onclick="revealGallery()">
         <span>Découvrir les captures du projet</span>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10l5 5 5-5"/></svg>
       </div>
-      <!-- Gallery shots -->
-      <div class="modal-shots-label">Aperçu du projet</div>
-      <div class="modal-shots" id="modal-shots"></div>
+      <!-- Gallery shots — hidden until user clicks reveal -->
+      <div class="modal-gallery-wrap" id="galleryWrap">
+        <div class="modal-shots-label">Aperçu du projet</div>
+        <div class="modal-shots" id="modal-shots"></div>
+      </div>
     </div>
     <!-- Footer -->
     <div class="modal-footer">
       <div class="modal-prompt"><span id="modal-tagline"></span></div>
-      <a href="#contact" class="btn-primary" onclick="closeModal()" style="font-size:0.82rem;padding:0.55rem 1.25rem;white-space:nowrap">Démarrer mon projet →</a>
+      <a href="#contact" class="modal-cta" onclick="closeModal()">Démarrer mon projet →</a>
     </div>
   </div>
 </div>
@@ -2320,6 +2388,11 @@
 <!-- MOBILE STICKY CTA -->
 <div class="mobile-cta-bar">
   <a href="#contact">🚀 Demander un devis <span class="glow-word">GRATUIT</span></a>
+</div>
+
+<!-- IMAGE ZOOM OVERLAY -->
+<div id="img-zoom-overlay" onclick="closeZoom()">
+  <img id="zoom-img" src="" alt="Zoom"/>
 </div>
 
 <script>
@@ -2391,18 +2464,21 @@ const projects = {
   mecton: {
     title: 'MECTON',
     cat: 'Salon homme & Barbier',
+    location: 'Canet-en-Roussillon',
+    result: 'Conversion & prise de RDV',
     tagline: 'Un style sombre et masculin qui inspire confiance avant même le premier rendez-vous.',
-    after: 'mecton.png',
-    before: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&q=80',
+    after: 'mecton-main.png',
+    before: 'mecton-before.png',
     shots: [
-      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&q=80',
-      'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=900&q=80',
-      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=900&q=80'
+      'mecton-shot1.png',
+      'mecton-shot2.png'
     ]
   },
   osalondeli: {
     title: "O'Salon d'Elisa",
     cat: 'Salon de coiffure',
+    location: 'Paris',
+    result: 'Image premium & réservations',
     tagline: "Un site doux et élégant, fidèle à l'image de votre salon — et qui remplit votre agenda.",
     after: 'osalondeli.png',
     before: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&q=80',
@@ -2415,6 +2491,8 @@ const projects = {
   plombier: {
     title: 'Aquafix',
     cat: 'Artisan plombier',
+    location: 'Lyon',
+    result: 'SEO local & devis en ligne',
     tagline: 'Simple, rassurant, efficace — exactement ce que cherche un client en urgence.',
     after: 'plombier.png',
     before: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80',
@@ -2427,6 +2505,8 @@ const projects = {
   maisondoree: {
     title: 'Maison Dorée',
     cat: 'Restaurant gastronomique',
+    location: 'Bordeaux',
+    result: 'Réservations en ligne x3',
     tagline: "L'élégance gastronomique transcrite en expérience digitale — pour des tables toujours réservées.",
     after: 'resto.png',
     before: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80',
@@ -2439,6 +2519,8 @@ const projects = {
   serenityspa: {
     title: 'Serenity Spa',
     cat: 'Institut spa & bien-être',
+    location: 'Nice',
+    result: 'Visibilité & fidélisation',
     tagline: 'Un voyage visuel qui commence bien avant la visite — et qui convertit les curieux en clients fidèles.',
     after: 'spa.png',
     before: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1200&q=80',
@@ -2450,15 +2532,19 @@ const projects = {
   }
 };
 
-// ── Before/After slider — clip-path approach (cross-browser reliable) ──
+// ── Before/After slider — dual clip-path (no overlap possible) ──
 let baIsDragging = false;
 const baSlider = document.getElementById('baSlider');
-const baBefore  = document.getElementById('baBefore');
-const baLine    = document.getElementById('baLine');
+const baBefore = document.getElementById('baBefore');
+const baAfter  = document.getElementById('baAfter');
+const baLine   = document.getElementById('baLine');
 
 function baSetPct(pct) {
   pct = Math.max(2, Math.min(98, pct));
+  // Before: show left portion only (clip right side)
   baBefore.style.clipPath = `inset(0 ${(100 - pct).toFixed(2)}% 0 0)`;
+  // After: show right portion only (clip left side)
+  baAfter.style.clipPath  = `inset(0 0 0 ${pct.toFixed(2)}%)`;
   baLine.style.left = pct + '%';
 }
 function baGetPct(clientX) {
@@ -2485,32 +2571,57 @@ function loadProjectContent(key) {
   document.getElementById('modal-title-text').textContent = p.title;
   document.getElementById('modal-cat-text').textContent   = p.cat;
   document.getElementById('modal-tagline').textContent    = p.tagline || '';
+  // Case study meta
+  const meta = document.getElementById('modal-meta-text');
+  meta.innerHTML = (p.location ? p.location : '') +
+    (p.result ? ' <span class="modal-meta-tag">' + p.result + '</span>' : '');
   document.getElementById('baAfterImg').src  = p.after;
   document.getElementById('baBeforeImg').src = p.before;
   // Init mask at 50%
   requestAnimationFrame(() => baSetPct(50));
+  // Hide gallery until user reveals
+  document.getElementById('galleryWrap').classList.remove('revealed');
   document.getElementById('modal-shots').innerHTML = p.shots.map(src =>
-    `<div class="modal-shot"><img src="${src}" alt="${p.title}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
+    `<div class="modal-shot" onclick="openZoom('${src}')"><img src="${src}" alt="${p.title}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
   ).join('');
+}
+
+// ── Gallery reveal ──
+function revealGallery() {
+  const wrap = document.getElementById('galleryWrap');
+  wrap.classList.add('revealed');
+  setTimeout(() => {
+    wrap.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 120);
+}
+
+// ── Image zoom ──
+function openZoom(src) {
+  const overlay = document.getElementById('img-zoom-overlay');
+  document.getElementById('zoom-img').src = src;
+  requestAnimationFrame(() => overlay.classList.add('active'));
+}
+function closeZoom() {
+  document.getElementById('img-zoom-overlay').classList.remove('active');
 }
 
 // ── Navigate between projects with blur+speed animation ──
 function navigateProject(dir) {
-  const body = document.querySelector('.modal-body');
-  // Animate out
-  body.classList.add(dir > 0 ? 'slide-out-left' : 'slide-out-right');
+  const box = document.querySelector('.modal-box');
+  // Barrel out — whole modal flies off-screen
+  box.classList.add(dir > 0 ? 'barrel-out-left' : 'barrel-out-right');
   setTimeout(() => {
     currentProjIdx = (currentProjIdx + dir + projectKeys.length) % projectKeys.length;
     loadProjectContent(projectKeys[currentProjIdx]);
     renderCounter(currentProjIdx);
-    // Position for slide-in from opposite side
-    body.classList.remove('slide-out-left','slide-out-right');
-    body.classList.add(dir > 0 ? 'slide-in-left' : 'slide-in-right');
-    body.scrollTop = 0;
+    // Position for barrel-in from opposite side
+    box.classList.remove('barrel-out-left','barrel-out-right');
+    box.classList.add(dir > 0 ? 'barrel-in-left' : 'barrel-in-right');
+    document.querySelector('.modal-body').scrollTop = 0;
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      body.classList.remove('slide-in-left','slide-in-right');
+      box.classList.remove('barrel-in-left','barrel-in-right');
     }));
-  }, 320);
+  }, 550);
 }
 
 function openModal(key) {
@@ -2532,7 +2643,7 @@ function closeModalOnBg(e) {
   if (e.target === document.getElementById('proj-modal')) closeModal();
 }
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Escape') { closeZoom(); closeModal(); }
   if (e.key === 'ArrowLeft'  && document.getElementById('proj-modal').classList.contains('open')) navigateProject(-1);
   if (e.key === 'ArrowRight' && document.getElementById('proj-modal').classList.contains('open')) navigateProject(1);
 });
