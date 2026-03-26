@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Mentions légales — PixelForge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0D0812;--bg2:#110D17;--bg3:#16101E;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+      --text:#F0EAF8;--muted:#7A6B88;--muted2:#B0A0C0;
+      --a1:#C840FF;--a2:#FF3A8C;
+      --grad:linear-gradient(135deg,#C840FF,#FF3A8C);
+      --glow1:rgba(200,64,255,0.25);
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;min-height:100vh}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#C840FF,#FF3A8C);border-radius:10px}
+
+    /* BG */
+    #bg-wrap{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+    #bg-l1{position:absolute;inset:-6%;background:
+      radial-gradient(ellipse 80% 60% at 15% 0%,rgba(200,64,255,0.12),transparent 60%),
+      radial-gradient(ellipse 60% 50% at 85% 90%,rgba(255,58,140,0.1),transparent 60%),
+      var(--bg)}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 max(24px,5%);height:80px;
+      display:flex;align-items:center;justify-content:space-between;
+      background:rgba(13,8,18,0.88);backdrop-filter:blur(24px) saturate(180%);
+      box-shadow:0 1px 0 var(--border)}
+    .nav-logo{text-decoration:none;display:flex;align-items:center}
+    .logo-img{height:52px;width:auto;object-fit:contain;filter:drop-shadow(0 0 10px rgba(200,64,255,0.5));transition:transform 0.2s}
+    .logo-img:hover{transform:scale(1.04)}
+    .nav-center{display:flex;gap:0.25rem}
+    .nav-center a{color:var(--muted2);text-decoration:none;font-size:0.84rem;font-weight:500;padding:0.4rem 0.875rem;border-radius:8px;transition:all 0.2s}
+    .nav-center a:hover{color:var(--text);background:rgba(255,255,255,0.06)}
+    .nav-right{display:flex;align-items:center;gap:0.75rem}
+    .btn-nav{padding:0.55rem 1.25rem;border-radius:10px;font-size:0.84rem;font-weight:700;background:var(--grad);color:#fff;text-decoration:none;transition:opacity 0.2s}
+    .btn-nav:hover{opacity:0.88}
+    @media(max-width:768px){
+      .nav-center{display:none}
+      .logo-img{height:38px}
+    }
+
+    /* CONTENT */
+    .legal-hero{padding:140px max(24px,5%) 60px;text-align:center}
+    .legal-label{display:inline-block;font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--a1);padding:0.3rem 1rem;border-radius:100px;background:rgba(200,64,255,0.08);border:1px solid rgba(200,64,255,0.2);margin-bottom:1.25rem}
+    .legal-title{font-size:clamp(2rem,5vw,3.25rem);font-weight:900;letter-spacing:-0.03em;line-height:1.15;margin-bottom:1rem}
+    .legal-title span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .legal-date{font-size:0.82rem;color:var(--muted);margin-top:0.5rem}
+
+    .legal-body{max-width:780px;margin:0 auto;padding:0 max(24px,5%) 100px}
+    .legal-section{margin-bottom:3rem;padding:2rem;background:var(--bg2);border:1px solid var(--border);border-radius:16px;position:relative;overflow:hidden}
+    .legal-section::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0.6}
+    .legal-section h2{font-size:1.1rem;font-weight:800;margin-bottom:1rem;color:var(--text);letter-spacing:-0.02em}
+    .legal-section h2 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .legal-section p{color:var(--muted2);font-size:0.9rem;line-height:1.75;margin-bottom:0.75rem}
+    .legal-section p:last-child{margin-bottom:0}
+    .legal-section a{color:var(--a1);text-decoration:none}
+    .legal-section a:hover{text-decoration:underline}
+    .legal-section strong{color:var(--text);font-weight:600}
+
+    /* FOOTER */
+    #footer{border-top:1px solid var(--border);padding:2.5rem max(24px,5%);background:var(--bg)}
+    .footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1.25rem;text-align:center}
+    .footer-brand{display:flex;flex-direction:column;align-items:center;gap:0.5rem}
+    .footer-logo{height:36px;width:auto;object-fit:contain;filter:drop-shadow(0 0 8px rgba(200,64,255,0.3))}
+    .footer-tagline{font-size:0.78rem;color:var(--muted);letter-spacing:0.05em}
+    .footer-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
+    .footer-links a{font-size:0.82rem;color:var(--muted2);text-decoration:none;transition:color 0.2s}
+    .footer-links a:hover{color:var(--a1)}
+    .footer-copy{font-size:0.75rem;color:var(--muted);opacity:0.7}
+  </style>
+</head>
+<body>
+
+<div id="bg-wrap" aria-hidden="true"><div id="bg-l1"></div></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <img src="logo1.png" alt="PixelForge" class="logo-img"/>
+  </a>
+  <div class="nav-center">
+    <a href="index.html#services">Services</a>
+    <a href="index.html#projects">Projets</a>
+    <a href="index.html#process">Processus</a>
+    <a href="index.html#why">Pourquoi nous</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+  <div class="nav-right">
+    <a href="index.html#contact" class="btn-nav">Démarrer un projet</a>
+  </div>
+</nav>
+
+<div class="legal-hero">
+  <div class="legal-label">Légal</div>
+  <h1 class="legal-title">Mentions <span>légales</span></h1>
+  <p class="legal-date">Dernière mise à jour : janvier 2026</p>
+</div>
+
+<div class="legal-body">
+
+  <div class="legal-section">
+    <h2><span>Éditeur</span> du site</h2>
+    <p><strong>Nom de l'agence :</strong> PixelForge</p>
+    <p><strong>Responsable de publication :</strong> Mathéo Benon</p>
+    <p><strong>Localisation :</strong> Paris, France</p>
+    <p><strong>Email :</strong> <a href="mailto:contact@pixelforgelab.fr">contact@pixelforgelab.fr</a></p>
+    <p><strong>Site web :</strong> <a href="https://www.pixelforgelab.fr" target="_blank">www.pixelforgelab.fr</a></p>
+  </div>
+
+  <div class="legal-section">
+    <h2>Activité</h2>
+    <p>PixelForge est une agence web spécialisée dans la création de sites internet sur-mesure, l'optimisation web, la maintenance et l'accompagnement digital pour les commerces locaux et les entreprises.</p>
+    <p>Nos services incluent : création de sites vitrines, refonte de sites existants, optimisation des conversions, référencement local (SEO) et intégration de systèmes de réservation en ligne.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2>Hébergement</h2>
+    <p><strong>Hébergeur :</strong> Vercel Inc.</p>
+    <p><strong>Adresse :</strong> 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis</p>
+    <p><strong>Site :</strong> <a href="https://vercel.com" target="_blank">https://vercel.com</a></p>
+  </div>
+
+  <div class="legal-section">
+    <h2>Propriété <span>intellectuelle</span></h2>
+    <p>L'ensemble des contenus présents sur ce site (textes, images, design, logo, code source, animations) sont la propriété exclusive de PixelForge, sauf mention contraire explicite.</p>
+    <p>Toute reproduction, distribution, modification ou utilisation de ces contenus sans autorisation écrite préalable est strictement interdite et constitue une contrefaçon sanctionnée par le Code de la propriété intellectuelle.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2>Responsabilité</h2>
+    <p>PixelForge s'efforce de fournir des informations aussi précises et à jour que possible. Cependant, l'agence ne peut garantir l'exactitude, l'exhaustivité ou la pertinence de toutes les informations publiées sur ce site.</p>
+    <p>PixelForge ne saurait être tenu responsable des dommages directs ou indirects résultant de l'utilisation de ce site ou de l'impossibilité d'y accéder.</p>
+  </div>
+
+  <div class="legal-section">
+    <h2>Liens <span>externes</span></h2>
+    <p>Ce site peut contenir des liens vers des sites tiers. PixelForge n'exerce aucun contrôle sur ces sites et décline toute responsabilité quant à leur contenu ou leur politique de confidentialité.</p>
+  </div>
+
+</div>
+
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="logo1.png" alt="PixelForge" class="footer-logo"/>
+      <span class="footer-tagline">Forgez votre présence digitale</span>
+    </div>
+    <nav class="footer-links">
+      <a href="legal.html">Mentions légales</a>
+      <a href="privacy.html">Confidentialité</a>
+      <a href="cgv.html">CGV</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <p class="footer-copy">© 2026 PixelForge — Tous droits réservés</p>
+  </div>
+</footer>
+
+</body>
+</html>
