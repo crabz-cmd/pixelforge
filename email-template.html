@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nouveau Lead PixelForge</title>
+  <style>
+    /* Reset et base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0a0e18;
+      color: #F0EAF8;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    /* Container principal */
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #110D17;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Header */
+    .email-header {
+      background: linear-gradient(135deg, #C840FF, #FF3A8C);
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .email-logo {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Contenu principal */
+    .email-content {
+      padding: 30px 20px;
+    }
+
+    .email-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #C840FF;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .email-subtitle {
+      font-size: 14px;
+      color: #B0A0C0;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    /* Sections d'informations */
+    .info-section {
+      background-color: #16101E;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .info-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #C840FF;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 11px;
+      color: #7A6B88;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .info-value {
+      font-size: 14px;
+      color: #F0EAF8;
+      font-weight: 600;
+    }
+
+    .info-value.highlight {
+      color: #C840FF;
+    }
+
+    /* Message */
+    .message-section {
+      background-color: #16101E;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .message-content {
+      font-size: 14px;
+      color: #F0EAF8;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    /* Métadonnées */
+    .meta-section {
+      background-color: #0a0e18;
+      border-radius: 8px;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .meta-item:last-child {
+      border-bottom: none;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      color: #7A6B88;
+    }
+
+    .meta-value {
+      font-size: 12px;
+      color: #B0A0C0;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .email-footer {
+      background-color: #080810;
+      padding: 20px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .footer-text {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .footer-link {
+      color: #C840FF;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media only screen and (max-width: 480px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .email-content {
+        padding: 20px 15px;
+      }
+
+      .email-title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Header -->
+    <div class="email-header">
+      <div class="email-logo">PixelForge</div>
+    </div>
+
+    <!-- Contenu principal -->
+    <div class="email-content">
+      <h1 class="email-title">🚀 Nouveau Lead PixelForge</h1>
+      <p class="email-subtitle">Une nouvelle demande de devis a été reçue sur votre site</p>
+
+      <!-- Informations client -->
+      <div class="info-section">
+        <div class="info-section-title">Informations Client</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Prénom</span>
+            <span class="info-value">{{PRENOM}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Nom</span>
+            <span class="info-value">{{NOM}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email</span>
+            <span class="info-value highlight">{{EMAIL}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Téléphone</span>
+            <span class="info-value">{{TELEPHONE}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Entreprise</span>
+            <span class="info-value">{{ENTREPRISE}}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Type de projet</span>
+            <span class="info-value highlight">{{TYPE_PROJET}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div class="message-section">
+        <div class="info-section-title">Message</div>
+        <p class="message-content">{{MESSAGE}}</p>
+      </div>
+
+      <!-- Métadonnées -->
+      <div class="meta-section">
+        <div class="meta-item">
+          <span class="meta-label">Date</span>
+          <span class="meta-value">{{DATE}}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">IP Utilisateur</span>
+          <span class="meta-value">{{IP}}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="email-footer">
+      <p class="footer-text">
+        Ce message a été envoyé depuis le formulaire de contact de<br>
+        <a href="https://www.pixelforgelab.fr" class="footer-link">www.pixelforgelab.fr</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
