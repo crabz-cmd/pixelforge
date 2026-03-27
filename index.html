@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>PixelForge — Forgez votre présence digitale</title>
+  <link rel="icon" type="image/png" href="favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -1218,12 +1219,12 @@
 
     /* ═══ ALL PROJECTS OVERLAY ═══ */
     #all-projects-overlay{
-      position:fixed;inset:0;z-index:8500;
-      width:100vw;max-width:100vw;
-      background:rgba(4,7,14,0.97);
+      position:fixed;top:0;left:0;width:100%;height:100vh;z-index:9999;
+      background:rgba(13,8,18,0.97);
       backdrop-filter:blur(24px);
       display:none;flex-direction:column;
-      overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(200,64,255,0.3) transparent;
+      overflow-y:auto;overflow-x:hidden;
+      scrollbar-width:thin;scrollbar-color:rgba(200,64,255,0.3) transparent;
     }
     #all-projects-overlay.open{display:flex}
     #all-projects-overlay.closing{
@@ -1233,7 +1234,7 @@
       position:sticky;top:0;z-index:10;
       display:flex;align-items:center;justify-content:space-between;
       padding:1.5rem 3rem;
-      background:rgba(4,7,14,0.85);backdrop-filter:blur(16px);
+      background:rgba(13,8,18,0.85);backdrop-filter:blur(16px);
       border-bottom:1px solid rgba(255,255,255,0.06);
     }
     .allproj-title{
@@ -1248,35 +1249,60 @@
     }
     .allproj-close:hover{background:rgba(255,255,255,0.09);color:var(--text)}
     .allproj-grid{
-      display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
-      padding:2.5rem 3rem 4rem;
+      display:grid;grid-template-columns:repeat(3,1fr);gap:32px;
+      padding:40px 40px 140px 40px;
       max-width:1400px;margin:0 auto;width:100%;
     }
     .allproj-card{
-      background:rgba(255,255,255,0.03);
-      border:1px solid rgba(200,64,255,0.15);
-      border-radius:18px;overflow:hidden;cursor:pointer;
-      position:relative;max-height:420px;
-      transition:transform 0.35s ease,border-color 0.3s,box-shadow 0.35s;
+      background:var(--bg3);
+      border:1px solid rgba(200,64,255,0.28);
+      border-radius:var(--radius2);overflow:hidden;cursor:pointer;
+      position:relative;
+      transition:transform 0.4s cubic-bezier(.25,.8,.25,1),border-color 0.3s,box-shadow 0.4s;
+      box-shadow:0 8px 32px rgba(0,0,0,0.45),0 0 0 1px rgba(200,64,255,0.12),inset 0 1px 0 rgba(255,255,255,0.06);
+      opacity:0;transform:translateY(40px);
     }
-    .allproj-card::before{
-      content:'';position:absolute;inset:0;border-radius:18px;
-      border:2px solid transparent;
-      background:conic-gradient(from var(--proj-angle,0deg),transparent 0deg,rgba(200,64,255,0) 60deg,#C840FF 90deg,#FF3A8C 110deg,rgba(255,58,140,0) 140deg,transparent 200deg) border-box;
-      -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
-      -webkit-mask-composite:destination-out;mask-composite:exclude;
-      opacity:0;transition:opacity 0.4s;z-index:1;pointer-events:none;
+    .allproj-card.visible{
+      opacity:1;transform:translateY(0);
+      transition:all 0.7s cubic-bezier(.16,.84,.44,1);
     }
     .allproj-card:hover{
-      transform:translateY(-6px) scale(1.02);
-      box-shadow:0 30px 80px rgba(0,0,0,0.5),0 0 40px rgba(200,64,255,0.15);
+      transform:translateY(-10px);
+      box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 60px rgba(200,64,255,0.18),0 0 0 1px rgba(200,64,255,0.22);
     }
-    .allproj-card:hover::before{opacity:1;animation:projBorderRotate 2s linear infinite}
+    .allproj-card-img-container{
+      width:100%;aspect-ratio:16/10;overflow:hidden;position:relative;
+    }
     .allproj-card-img{
-      width:100%;aspect-ratio:16/10;object-fit:cover;display:block;
-      border-bottom:1px solid rgba(255,255,255,0.06);
+      width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;
     }
-    .allproj-card-body{padding:1.25rem 1.5rem}
+    .allproj-card:hover .allproj-card-img{
+      transform:translateY(-6%);
+    }
+    .allproj-card:hover::before{
+      opacity:1;animation:projBorderRotate 2s linear infinite;
+    }
+    @property --proj-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+    @keyframes projBorderRotate{to{--proj-angle:360deg}}
+    .allproj-card-info{padding:1.5rem 1.75rem 1.75rem}
+    .allproj-card-meta{
+      display:flex;align-items:center;justify-content:space-between;margin-bottom:0.625rem;
+    }
+    .allproj-card-cat{
+      font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+      color:var(--a1);
+    }
+    .allproj-card-result{
+      font-size:0.7rem;font-weight:700;color:var(--a1);
+      background:rgba(58,171,255,0.08);border:1px solid rgba(58,171,255,0.2);
+      padding:2px 8px;border-radius:100px;
+    }
+    .allproj-card-name{
+      font-size:1.1rem;font-weight:800;margin-bottom:0.4rem;letter-spacing:-0.02em;
+    }
+    .allproj-card-tag{
+      font-size:0.85rem;color:var(--muted2);line-height:1.65;
+    }
     .allproj-card-cat{
       font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
       color:var(--a1);margin-bottom:0.4rem;
@@ -1296,7 +1322,11 @@
     }
     /* Tablet - 2 colonnes */
     @media(max-width:1024px){
-      .allproj-grid{grid-template-columns:repeat(2,1fr);gap:20px}
+      .allproj-grid{
+        grid-template-columns:repeat(2,1fr);
+        gap:24px;
+        padding:32px 24px 100px 24px;
+      }
     }
 
     /* ═══ WHY ═══ */
@@ -1699,19 +1729,12 @@
       .modal-nav-prev{left:0.25rem}
       .modal-nav-next{right:0.25rem}
 
-      /* ── All-projects overlay: slider horizontal ── */
+      /* ── All-projects overlay: grid mobile ── */
       .allproj-header{padding:1rem 1.25rem}
       .allproj-grid{
-        display:flex;overflow-x:auto;overflow-y:hidden;
-        padding:1.25rem;gap:1.25rem;
-        scroll-snap-type:x mandatory;
-        -webkit-overflow-scrolling:touch;
-      }
-      .allproj-grid::-webkit-scrollbar{height:4px}
-      .allproj-grid::-webkit-scrollbar-thumb{background:linear-gradient(90deg,#C840FF,#FF3A8C);border-radius:10px}
-      .allproj-card{
-        flex:0 0 85vw;max-width:420px;
-        scroll-snap-align:start;
+        grid-template-columns:1fr;
+        gap:16px;
+        padding:24px 16px 80px 16px;
       }
 
       /* ── Projects header: stack ── */
@@ -2835,7 +2858,9 @@ function openAllProjects() {
   grid.innerHTML = projectKeys.map(key => {
     const p = projects[key];
     return `<div class="allproj-card" onclick="closeAllProjects();openModal('${key}')">
-      <img class="allproj-card-img" src="${p.after}" alt="${p.title}" loading="lazy"/>
+      <div class="allproj-card-img-container">
+        <img class="allproj-card-img" src="${p.after}" alt="${p.title}" loading="lazy"/>
+      </div>
       <div class="allproj-card-body">
         <div class="allproj-card-cat">${p.cat}</div>
         <div class="allproj-card-name">${p.title}</div>
@@ -2850,6 +2875,20 @@ function openAllProjects() {
       </div>
     </div>`;
   }).join('');
+
+  // Animation d'apparition au scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, Array.from(grid.querySelectorAll('.allproj-card')).indexOf(entry.target) * 50);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold: 0.1, rootMargin: '0px 0px -50px 0px'});
+  grid.querySelectorAll('.allproj-card').forEach(card => observer.observe(card));
+
   document.getElementById('all-projects-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -2858,7 +2897,7 @@ function closeAllProjects() {
   overlay.classList.add('closing');
   setTimeout(() => {
     overlay.classList.remove('open', 'closing');
-    document.body.style.overflow = '';
+    document.body.style.overflow = 'auto';
   }, 300);
 }
 
@@ -3552,6 +3591,36 @@ window.addEventListener('scroll', () => {
     a.style.background = isActive ? 'rgba(255,255,255,0.06)' : '';
   });
 }, {passive:true});
+
+// ── GSAP Integration ───────────────────────────────────────────────────────
+// Feature flag for gradual migration
+window.USE_GSAP = true;
+
+// Initialize GSAP with error handling
+if (window.USE_GSAP) {
+  try {
+    // Wait for DOM to be ready before accessing GSAP
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('GSAP integration: Initializing...');
+
+      // Check if GSAP is loaded
+      if (typeof gsap === 'undefined') {
+        console.warn('GSAP not loaded, falling back to vanilla animations');
+        window.USE_GSAP = false;
+        return;
+      }
+
+      console.log('GSAP v' + gsap.version + ' loaded successfully');
+    });
+  } catch (error) {
+    console.error('GSAP initialization error:', error);
+    window.USE_GSAP = false;
+  }
+}
 </script>
+<!-- GSAP Core -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- GSAP ScrollTrigger Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </body>
 </html>
