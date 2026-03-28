@@ -1,0 +1,77 @@
+
+OPTIMISATION DES IMAGES - RAPPORT DETAILE
+================================================
+Date: 27/03/2026 19:59:12
+Directory: C:\Users\crabz\PixelForge2
+
+TOTALS
+--------------------------------------------------
+Images analyzed: 10
+Total current size: 10577.14 KB
+Total target size: 790.00 KB
+Potential savings: 9787.14 KB (92.5%)
+
+DETAILS BY IMAGE
+--------------------------------------------------
+
+logo1.png
+- Current size: 2089.08 KB
+- Target: <50 KB
+- Priority: critical
+- Status: Needs optimization
+
+spa.png
+- Current size: 1928.34 KB
+- Target: <100 KB
+- Priority: high
+- Status: Needs optimization
+
+resto.png
+- Current size: 1742.93 KB
+- Target: <100 KB
+- Priority: high
+- Status: Needs optimization
+
+osalondeli.png
+- Current size: 1294.69 KB
+- Target: <100 KB
+- Priority: high
+- Status: Needs optimization
+
+mecton-before.png
+- Current size: 1164.55 KB
+- Target: <100 KB
+- Priority: high
+- Status: Needs optimization
+
+plombier.png
+- Current size: 705.40 KB
+- Target: <80 KB
+- Priority: medium
+- Status: Needs optimization
+
+mecton.png
+- Current size: 690.42 KB
+- Target: <80 KB
+- Priority: medium
+- Status: Needs optimization
+
+mecton-main.png
+- Current size: 653.29 KB
+- Target: <80 KB
+- Priority: medium
+- Status: Needs optimization
+
+mecton-shot2.png
+- Current size: 172.30 KB
+- Target: <50 KB
+- Priority: low
+- Status: Needs optimization
+
+mecton-shot1.png
+- Current size: 136.14 KB
+- Target: <50 KB
+- Priority: low
+- Status: Needs optimization
+
+==================================================

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>FAQ — Questions Frequentes | PixelForge</title>
+  <meta name="description" content="Questions frequentes sur la creation de sites web pour commerces locaux. Prix, delais, processus, garanties. PixelForge repond a toutes vos questions."/>
+  <meta name="keywords" content="FAQ, questions frequentes, creation site web, agence web, prix, delais, garanties, PixelForge"/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="canonical" href="https://www.pixelforgelab.fr/FAQ.html"/>
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="FAQ — Questions Frequentes | PixelForge"/>
+  <meta property="og:description" content="Questions frequentes sur la creation de sites web pour commerces locaux. Prix, delais, processus, garanties."/>
+  <meta property="og:image" content="https://www.pixelforgelab.fr/logo1.webp"/>
+  <meta property="og:url" content="https://www.pixelforgelab.fr/FAQ.html"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="PixelForge"/>
+  <meta property="og:locale" content="fr_FR"/>
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="FAQ — Questions Frequentes | PixelForge"/>
+  <meta name="twitter:description" content="Questions frequentes sur la creation de sites web pour commerces locaux."/>
+  <meta name="twitter:image" content="https://www.pixelforgelab.fr/logo1.webp"/>
+  <meta name="twitter:site" content="@PixelForgeLab"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0D0812;--bg2:#110D17;--bg3:#16101E;--bg4:#1C1428;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+      --text:#F0EAF8;--muted:#7A6B88;--muted2:#B0A0C0;
+      --a1:#C840FF;--a2:#FF3A8C;--a3:#9B30FF;
+      --grad:linear-gradient(135deg,#C840FF,#FF3A8C);
+      --radius:16px;--radius2:24px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:var(--bg)}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#C840FF,#FF3A8C);border-radius:10px}
+    ::selection{background:rgba(200,64,255,0.28);color:#fff}
+
+    /* NAVBAR */
+    #nav{
+      position:fixed;top:0;left:0;right:0;
+      z-index:1000;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:16px clamp(1rem,2.5vw,1.5rem);
+      background:transparent;transition:0.4s;
+    }
+    #nav.scrolled{
+      background:rgba(13,8,18,0.90);
+      backdrop-filter:blur(20px);
+      padding:10px clamp(1rem,2.5vw,1.5rem);
+    }
+    .nav-logo img{height:130px;width:auto;transition:height 0.4s}
+    #nav.scrolled .nav-logo img{height:100px}
+    .nav-center{display:flex;gap:1.5rem;align-items:center}
+    .nav-center a{
+      color:var(--text);text-decoration:none;font-weight:500;
+      font-size:0.9rem;transition:color 0.3s;position:relative
+    }
+    .nav-center a:hover{color:var(--a1)}
+    .nav-center a::after{
+      content:'';position:absolute;bottom:-4px;left:0;
+      width:0;height:2px;background:var(--grad);
+      transform:scaleX(0);transition:transform 0.3s;
+    }
+    .nav-center a:hover::after{transform:scaleX(1)}
+    .nav-center a.active{color:var(--a1)}
+    .nav-center a.active::after{transform:scaleX(1)}
+    .btn-nav{
+      padding:0.625rem 1.25rem;
+      background:var(--grad);
+      color:var(--text);border:none;border-radius:8px;
+      font-weight:600;font-size:0.875rem;cursor:pointer;
+      transition:transform 0.3s,box-shadow 0.3s;
+    }
+    .btn-nav:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(200,64,255,0.3)}
+    .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:5px}
+    .burger span{width:24px;height:2px;background:var(--text);border-radius:2px;transition:0.3s}
+    .burger:hover span:first-child{transform:translateY(6px) rotate(45deg)}
+    .burger:hover span:nth-child(2){opacity:0}
+    .burger:hover span:last-child{transform:translateY(-6px) rotate(-45deg)}
+
+    /* HEADER */
+    .header{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:clamp(2rem,4vw,3rem) clamp(1rem,2vw,1.5rem);
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(ellipse 130% 70% at 15% -5%,rgba(180,40,255,0.20) 0%,transparent 55%),
+        radial-gradient(ellipse 90% 60% at 90% 110%,rgba(255,58,140,0.16) 0%,transparent 52%),
+        radial-gradient(ellipse 50% 40% at 55% 80%,rgba(140,30,200,0.10) 0%,transparent 60%),
+        var(--bg);
+    }
+    /* Animated blobs — mirrors homepage bg-l2 */
+    .header::before{
+      content:'';position:absolute;inset:-25%;
+      background:
+        radial-gradient(ellipse 42% 36% at 22% 38%,rgba(200,64,255,0.18) 0%,transparent 65%),
+        radial-gradient(ellipse 36% 30% at 78% 62%,rgba(255,58,140,0.13) 0%,transparent 65%),
+        radial-gradient(ellipse 24% 22% at 50% 18%,rgba(58,171,255,0.07) 0%,transparent 65%);
+      filter:blur(52px);
+      animation:faqBlobDrift 12s ease-in-out infinite alternate;
+      pointer-events:none;
+    }
+    /* Subtle dot-grid overlay — matches homepage bg-grid aesthetic */
+    .header::after{
+      content:'';position:absolute;inset:0;
+      background-image:
+        radial-gradient(circle,rgba(200,64,255,0.10) 1px,transparent 1px);
+      background-size:44px 44px;
+      opacity:0;
+      animation:faqGridAppear 1.4s ease 0.4s forwards;
+      pointer-events:none;
+    }
+    .header-content{
+      position:relative;z-index:1;max-width:800px;
+      animation:faqContentSlide 0.85s cubic-bezier(.25,.8,.25,1) both;
+    }
+    @keyframes faqBlobDrift{
+      0%{transform:translate(0,0) scale(1);opacity:0.75}
+      100%{transform:translate(-4%,3%) scale(1.07);opacity:1}
+    }
+    @keyframes faqGridAppear{
+      from{opacity:0}to{opacity:1}
+    }
+    @keyframes faqContentSlide{
+      from{opacity:0;transform:translateY(26px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .header::before{animation:none;opacity:1}
+      .header::after{animation:none;opacity:1}
+      .header-content{animation:none}
+    }
+    .header h1{
+      font-size:clamp(2.5rem,5vw,4rem);
+      font-weight:900;
+      letter-spacing:-0.03em;
+      line-height:1.1;
+      margin-bottom:1.5rem;
+      background:var(--grad);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .header p{
+      font-size:1.1rem;
+      color:var(--muted2);
+      line-height:1.7;
+      max-width:600px;
+      margin:0 auto 2rem;
+    }
+
+    /* FAQ SECTION */
+    #faq{padding:5rem 1.5rem;background:var(--bg2);min-height:100vh}
+    .faq-container{max-width:900px;margin:0 auto;display:grid;gap:1rem}
+    .faq-item{
+      background:var(--bg3);
+      border:1px solid var(--border2);
+      border-radius:16px;
+      overflow:hidden;
+      transition:border-color 0.3s,box-shadow 0.3s;
+    }
+    .faq-item:hover{
+      border-color:var(--a1);
+      box-shadow:0 0 30px rgba(200,64,255,0.1);
+    }
+    .faq-question{
+      padding:1.5rem 1.75rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:1rem;
+      cursor:pointer;
+      user-select:none;
+      transition:background 0.3s;
+      background:transparent;
+    }
+    .faq-question:hover{background:var(--bg4)}
+    .faq-question span{
+      font-size:1.1rem;
+      font-weight:600;
+      color:var(--text);
+      line-height:1.5;
+    }
+    .faq-question svg{
+      flex-shrink:0;
+      color:var(--a2);
+      transition:transform 0.3s;
+    }
+    .faq-item.active .faq-question svg{transform:rotate(180deg)}
+    .faq-answer{
+      max-height:0;
+      overflow:hidden;
+      padding:0 1.75rem;
+      opacity:0;
+      transition:max-height 0.4s ease,opacity 0.3s ease,padding 0.3s ease;
+    }
+    .faq-item.active .faq-answer{
+      max-height:500px;
+      padding:0 1.75rem 1.75rem 1.75rem;
+      opacity:1;
+    }
+    .faq-answer p{
+      color:var(--muted2);
+      line-height:1.75;
+      margin:0;
+    }
+    .faq-answer strong{color:var(--a1)}
+
+    /* CTA */
+    .cta-section{text-align:center;padding:3rem 1.5rem}
+    .cta-text{margin-bottom:1.5rem;color:var(--muted2)}
+    .cta-btn{
+      display:inline-flex;align-items:center;gap:0.5rem;
+      padding:0.75rem 1.5rem;
+      background:var(--grad);
+      color:var(--text);
+      text-decoration:none;
+      border-radius:12px;
+      font-weight:600;
+      transition:transform 0.3s,box-shadow 0.3s;
+    }
+    .cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(200,64,255,0.3)}
+
+    /* FOOTER */
+    footer{
+      background:var(--bg3);
+      padding:3rem 1.5rem;
+      text-align:center;
+      border-top:1px solid var(--border);
+    }
+    .footer-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:0.5rem 1rem;margin-bottom:1.5rem}
+    .footer-nav a{color:var(--muted2);text-decoration:none;font-size:0.875rem;transition:color 0.3s}
+    .footer-nav a:hover{color:var(--a1)}
+    .footer-bottom{color:var(--muted);font-size:0.8rem;line-height:1.6}
+    .footer-bottom a{color:var(--muted2);text-decoration:none;transition:color 0.3s}
+    .footer-bottom a:hover{color:var(--a1)}
+    .footer-copy{margin-top:1.5rem;color:var(--muted);font-size:0.75rem}
+
+    /* MOBILE */
+    @media(max-width:768px){
+      .nav-center{display:none}
+      .nav-right{display:none}
+      .burger{display:flex}
+      .nav-center.open{
+        display:flex;flex-direction:column;
+        position:fixed;top:72px;left:0;right:0;
+        background:rgba(13,8,18,0.95);
+        padding:1.5rem;gap:1rem;z-index:999;
+      }
+      .nav-center.open a{font-size:1rem;padding:0.5rem 0}
+      .header h1{font-size:2rem}
+      .header p{font-size:1rem}
+      #faq{padding:3rem 1rem}
+      .faq-question{padding:1.25rem 1.5rem}
+      .faq-question span{font-size:1rem}
+      .faq-answer{padding:0 1.5rem 1.5rem 1.5rem}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">
+      <img src="logo1.webp" alt="PixelForge" class="logo-img"/>
+    </a>
+    <div class="nav-center">
+      <a href="index.html#services">Services</a>
+      <a href="index.html#projects">Projets</a>
+      <a href="index.html#process">Processus</a>
+      <a href="index.html#why">Pourquoi nous</a>
+      <a href="FAQ.html" class="active">FAQ</a>
+      <a href="index.html#contact">Contact</a>
+    </div>
+    <div class="nav-right">
+      <a href="index.html#contact" class="btn-nav">Démarrer un projet</a>
+      <div class="burger" onclick="toggleNav()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <section class="header">
+    <div class="header-content">
+      <h1>Questions Fréquentes</h1>
+      <p>Les réponses aux questions les plus posées sur la création de votre site web. Vous ne trouvez pas votre réponse ? Contactez-nous, nous répondons sous 24h.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="faq-container">
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Combien coûte la création d'un site web ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Le coût d'un site vitrine pour commerce local commence à <strong>1 490€</strong> incluant : design premium, développement, mise en ligne, SEO de base et 3 mois de support. Pour les sites plus complexes (boutique en ligne, fonctionnalités avancées), les tarifs sont adaptés selon vos besoins spécifiques. Demandez un devis gratuit pour une estimation précise.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Combien de temps faut-il pour créer mon site ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Nous livrons la plupart des sites vitrines en <strong>14 jours</strong> suite à la réception de vos contenus (textes, photos, logo). Le délai inclut : design, développement, tests et mise en ligne. Pour les projets plus complexes, les délais sont adaptés en fonction des fonctionnalités demandées.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Puis-je modifier mon site moi-même après la livraison ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Absolument ! Chaque site inclut une interface d'administration intuitive. Vous pouvez modifier textes, images, ajouter des articles de blog et gérer vos réservations en quelques clics. Nous vous fournissons également une documentation complète et une formation pour vous accompagner.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Mon site sera-t-il optimisé pour Google ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Oui, tous nos sites sont livrés avec une optimisation SEO de base incluse : structure technique optimisée, balises méta, sitemap XML, compatibilité mobile et temps de chargement rapide. Pour un référencement plus avancé (SEO local, stratégie de contenu, backlinks), nous proposons des services SEO personnalisés.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Pourquoi choisir PixelForge plutôt qu'une agence locale ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>PixelForge combine l'expertise d'une agence premium avec une approche centrée sur les commerces locaux. Nous comprenons vos défis spécifiques (clientèle de proximité, besoin de réservations, horaires...). Nos sites sont conçus pour convertir vos visiteurs en clients : CTA stratégiques, formulaires optimisés, design rassurant et expérience fluide.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Proposez-vous un support après la livraison ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Oui ! Chaque projet inclut <strong>3 mois de support gratuit</strong> pour : ajustements mineurs, corrections bugs, questions techniques et assistance SEO. Après cette période, nous proposons des forfaits de maintenance mensuels pour assurer que votre site reste performant et sécurisé.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Acceptez-vous les paiements en plusieurs fois ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Oui, pour faciliter votre trésorerie, nous proposons des paiements en 3 fois sans frais. <strong>50% à la commande, 25% à la validation du design, 25% à la livraison finale.</strong> Cela vous permet de répartir l'investissement sur plusieurs mois sans surcoût.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Mon site sera-t-il sécurisé ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>100% sécurisé. Tous nos sites incluent : certificat SSL HTTPS (cadenas vert), protection contre les attaques, sauvegardes automatiques et protection DDoS. La sécurité de vos données et de celles de vos clients est notre priorité absolue.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Proposez-vous des services de référencement local ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Oui ! Nous proposons des services de SEO local pour améliorer votre visibilité sur Google Maps et dans les recherches locales. Cela inclut : optimisation Google My Business, création de citations locales, stratégies d'avis clients et contenu géolocalisé. Idéal pour les commerces physiques.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Que se passe-t-il si je ne suis pas satisfait du design ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Notre garantie de satisfaction : <strong>satisfait ou remboursé</strong>. Si le design proposé ne correspond pas à vos attentes après 2 révisions, nous vous remboursons intégralement. Sans risque pour vous. Votre satisfaction est notre priorité absolue.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Pouvez-vous intégrer un système de réservation en ligne ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Absolument ! Nous intégrons des systèmes de réservation en ligne personnalisés pour : restaurants (table, horaires), salons (rendez-vous coiffure/beauté), spas (traitements, créneaux), médecins (consultations). Synchronisation possible avec Google Calendar et envoi de confirmations automatiques.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          <span>Comment se déroule le processus de création ?</span>
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="faq-answer">
+          <p>Notre processus en 4 étapes simples :<br>
+          1. <strong>Brief et devis gratuit</strong> — Nous comprenons vos besoins<br>
+          2. <strong>Design</strong> — Nous créons 2-3 maquettes pour validation<br>
+          3. <strong>Développement</strong> — Nous intégrons vos contenus et développons les fonctionnalités<br>
+          4. <strong>Livraison</strong> — Tests, mise en ligne et formation<br>
+          Le tout en <strong>14 jours</strong> après réception de vos contenus.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <p class="cta-text">Vous avez d'autres questions ? Contactez-nous, nous répondons sous 24h.</p>
+      <a href="index.html#contact" class="cta-btn">
+        Poser ma question
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- FAQ Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Combien coûte la création d'un site web ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Le coût d'un site vitrine pour commerce local commence à 1 490€ incluant : design premium, développement, mise en ligne, SEO de base et 3 mois de support."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Combien de temps faut-il pour créer mon site ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nous livrons la plupart des sites vitrines en 14 jours suite à la réception de vos contenus."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Puis-je modifier mon site moi-même après la livraison ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolument ! Chaque site inclut une interface d'administration intuitive pour modifier textes, images et ajouter du contenu."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Mon site sera-t-il optimisé pour Google ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui, tous nos sites sont livrés avec une optimisation SEO de base incluse : structure technique optimisée, balises méta, sitemap XML."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Proposez-vous un support après la livraison ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui ! Chaque projet inclut 3 mois de support gratuit pour : ajustements mineurs, corrections bugs et assistance technique."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Acceptez-vous les paiements en plusieurs fois ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui, pour faciliter votre trésorerie, nous proposons des paiements en 3 fois sans frais : 50% à la commande, 25% à la validation du design, 25% à la livraison finale."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Mon site sera-t-il sécurisé ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "100% sécurisé. Tous nos sites incluent : certificat SSL HTTPS, protection contre les attaques, sauvegardes automatiques et protection DDoS."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Proposez-vous des services de référencement local ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Oui ! Nous proposons des services de SEO local pour améliorer votre visibilité sur Google Maps et dans les recherches locales."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Que se passe-t-il si je ne suis pas satisfait du design ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Notre garantie de satisfaction : satisfait ou remboursé. Si le design proposé ne correspond pas à vos attentes après 2 révisions, nous vous remboursons intégralement."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Pouvez-vous intégrer un système de réservation en ligne ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolument ! Nous intégrons des systèmes de réservation en ligne personnalisés pour : restaurants, salons, spas et médecins."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Comment se déroule le processus de création ?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Notre processus en 4 étapes simples : 1. Brief et devis gratuit 2. Design 3. Développement 4. Livraison - le tout en 14 jours."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- FOOTER -->
+  <footer>
+    <nav class="footer-nav">
+      <a href="index.html#services">Services</a>
+      <a href="index.html#projects">Projets</a>
+      <a href="index.html#process">Processus</a>
+      <a href="index.html#why">Pourquoi nous</a>
+      <a href="FAQ.html" style="color:var(--a1)">FAQ</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <div class="footer-bottom">
+      <p>PixelForge &mdash; Forgez votre présence digitale</p>
+      <p>
+        <a href="legal.html">Mentions légales</a> &middot;
+        <a href="privacy.html">Politique de confidentialité</a> &middot;
+        <a href="cgv.html">Conditions générales</a>
+      </p>
+      <p class="footer-copy">&copy; 2026 PixelForge. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    function toggleNav() {
+      const links = document.getElementById('navLinks') || document.querySelector('.nav-center');
+      const spans = document.querySelectorAll('.burger span');
+      const nav = document.getElementById('nav');
+      const isScrolled = nav.classList.contains('scrolled');
+
+      links.classList.toggle('open');
+      const open = links.classList.contains('open');
+      spans[0].style.transform = open ? 'rotate(45deg) translate(5px,5px)' : '';
+      spans[1].style.opacity = open ? '0' : '';
+      spans[2].style.transform = open ? 'rotate(-45deg) translate(5px,-5px)' : '';
+
+      if (open) {
+        links.style.top = isScrolled ? '72px' : '90px';
+      }
+    }
+
+    function toggleFaq(element) {
+      const faqItem = element.parentElement;
+      const wasActive = faqItem.classList.contains('active');
+
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      if (!wasActive) {
+        faqItem.classList.add('active');
+      }
+    }
+
+    document.addEventListener('scroll', () => {
+      const nav = document.getElementById('nav');
+      if (window.scrollY > 60) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+
+    document.querySelectorAll('.nav-center a').forEach(a => a.addEventListener('click', () => {
+      const links = document.getElementById('navLinks') || document.querySelector('.nav-center');
+      links.classList.remove('open');
+      document.querySelectorAll('.burger span').forEach(s => {s.style.transform='';s.style.opacity='';});
+    }));
+  </script>
+</body>
+</html>

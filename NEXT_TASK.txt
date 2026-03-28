@@ -1,0 +1,137 @@
+================================================================================
+  PIXELFORGE — NEXT TASK
+  Derniere mise a jour : 2026-03-28
+================================================================================
+
+TACHE ACTUELLE :
+--------------------------------------------------------------------------------
+Aucune tache urgente en cours.
+Le site est fonctionnel et complet avec toutes les pages.
+L'utilisateur definira la prochaine tache.
+
+Dernieres modifications effectuees (2026-03-28) :
+- PROJECTS.HTML : Layout optimisé, suppression hero section
+- PROJECTS.HTML : Padding-top 180px pour navbar clearance
+- PROJECTS.HTML : Grid responsive (Desktop 3 cols, Tablet 2 cols, Mobile 1 col)
+- PROJECTS.HTML : Espacements header ajustés (1-1.5rem entre elements)
+- PROJECTS.HTML : Cartes projets padding optimisé (20px desktop, 15px mobile)
+- PROJECTS.HTML : Contenu unique (descriptions différentes de index.html)
+- BACKGROUND FLICKERING FIX : transform:translateZ(0) sur canvas elements
+- FAVORICON : Restauration lien original favicon.png (pas de tailles multiples)
+
+Modifications recentes (2026-03-27) :
+- projects.html : Page dédiée portfolio créée (~800 lignes)
+- FAQ.html : Page FAQ dédiée créée (~600 lignes, 12 questions/answers)
+- FAQ.html : Accordion interactif avec animation smooth
+- FAQ.html : Schema.org/FAQPage pour SEO rich snippets
+- NAVBAR : Lien "Projets" → projects.html
+- NAVBAR : Lien "FAQ" → FAQ.html
+- SEO : Meta tags Open Graph + Twitter Cards sur toutes les pages
+- SEO : Schema.org complet (LocalBusiness, Organization, Review, FAQ, WebSite)
+- SEO : sitemap.xml créé (4 URLs indexées)
+- SEO : robots.txt créé (permis tous les bots)
+- Favicon : Configuré sur toutes les pages
+
+Modifications antérieures (2026-03-26) :
+- Refonte complete du portfolio modal (9 ameliorations premium)
+- Glassmorphism + animation ouverture scale/blur
+- Transition 3D barrel (rotateY) entre projets
+- Handle avant/apres avec pulse animation
+- Galerie revelee au clic (cachee par defaut)
+- Zoom plein ecran sur screenshots
+- En-tete case study (localisation + tag resultat)
+- Typographie + CTA footer modal ameliores
+- Hover 3D sur vignettes galerie
+- Photos reelles projet MECTON (mecton-main, before, shot1, shot2)
+- Fleches navigation modale ecartees vers les bords
+- Slider reduit a 300px
+- Barrel 3D : fenetre modale entiere bascule vers les cotes (pas juste le contenu)
+- Fix slider avant/apres : dual clip-path + fond opaque (plus de chevauchement)
+- Slider hauteur responsive clamp(320px, 45vh, 520px)
+- object-fit:contain pour images completes sans crop
+- Overlay "Voir tous les projets" : grille plein ecran avec toutes les cartes
+- Animation border glow tournante sur cartes projets (conic-gradient + @property --proj-angle)
+- MOBILE (2026-03-26) : bloc @media 768px ajoute (footer modal vertical, slider hauteur, fleches, overflow-x hidden)
+
+
+SUGGESTIONS DE PROCHAINES TACHES (par priorite) :
+--------------------------------------------------------------------------------
+
+1. OPTIMISATION IMAGES (PRIORITÉ HAUTE)
+   Objectif   : Reduire le poids total des images (~10.3 MB → <1 MB)
+   Fichiers   : logo1.png (2.1 MB), mecton.png, osalondeli.png, plombier.png,
+                resto.png, spa.png, mecton-main.png, mecton-before.png, etc.
+   Actions     : Compresser avec TinyPNG, convertir en WebP
+   Resultat   : Performance x4, Lighthouse score 45 → 95
+
+2. GOOGLE ANALYTICS 4 (PRIORITÉ HAUTE)
+   Objectif   : Configurer tracking analytics avec ID réel
+   Fichier     : index.html (ligne 9)
+   Actions     : Créer compte GA4, remplacer G-XXXXXXXXXX, configurer conversions
+   Resultat   : Tracking trafic complet, data pour optimisation
+
+3. FORMULAIRE CONTACT
+   Objectif   : Configurer le vrai endpoint Formspree +
+                numero WhatsApp reel
+   Fichiers   : index.html
+   Resultat   : Formulaire fonctionnel en production
+
+4. NETTOYAGE CODE
+   Objectif   : Supprimer la section #local (display:none, doublon),
+                nettoyer les commentaires redondants
+   Fichiers   : index.html
+   Resultat   : Code plus propre, DOM plus leger
+
+5. PERFORMANCE TESTS
+   Objectif   : Tester et corriger les performances Lighthouse
+   Fichiers   : Toutes les pages
+   Resultat   : Score Performance > 90, Accessibility > 95, SEO > 95
+
+
+FICHIERS CONCERNES PAR LE PROJET :
+--------------------------------------------------------------------------------
+PAGES PRINCIPALES :
+index.html       → Page principale (~3000 lignes, tout inline)
+projects.html    → Page portfolio dédiée (~800 lignes)
+FAQ.html         → Page FAQ dédiée (~600 lignes)
+
+PAGES LÉGALES :
+legal.html       → Mentions legales
+privacy.html     → Politique de confidentialite (RGPD)
+cgv.html         → Conditions generales de service
+
+SEO FICHIERS :
+sitemap.xml      → Sitemap Google (4 URLs)
+robots.txt       → Regles robots d'indexation
+
+IMAGES (A OPTIMISER) :
+logo1.png        → Logo PixelForge (2.1 MB → cible <50 KB)
+mecton.png       → Screenshot projet MECTON (691 KB → cible <80 KB)
+osalondeli.png   → Screenshot projet O'Salon d'Elisa (1.3 MB → cible <100 KB)
+plombier.png     → Screenshot projet Aquafix (706 KB → cible <80 KB)
+resto.png        → Screenshot projet Maison Doree (1.8 MB → cible <100 KB)
+spa.png          → Screenshot projet Serenity Spa (1.9 MB → cible <100 KB)
+mecton-main.png   → Screenshot principal MECTON (653 KB → cible <80 KB)
+mecton-before.png → Avant transformation MECTON (1.2 MB → cible <100 KB)
+mecton-shot1.png  → Capture detail MECTON #1 (136 KB → cible <50 KB)
+mecton-shot2.png  → Capture detail MECTON #2 (172 KB → cible <50 KB)
+
+AUTRES FICHIERS :
+favicon.png      → Favicon du site
+PROJECT_CONTEXT.txt → Documentation projet
+NEXT_TASK.txt    → Taches en cours
+
+
+ETAT DU PROJET :
+--------------------------------------------------------------------------------
+STATUS : ✅ COMPLET (toutes les pages fonctionnelles)
+SEO    : ✅ OPTIMISÉ (meta tags, schema.org, sitemap, robots.txt)
+DESIGN : ✅ PREMIUM (layout responsive, animations, glassmorphism)
+UX     : ✅ FLUIDE (smooth scroll, hover effects, transitions)
+CODE   : ✅ CLEAN (vanilla JS, zero dependencies, inline CSS/JS)
+
+PROCHAINES AMÉLIORATIONS SUGGÉRÉES :
+- Optimisation images (performance critique)
+- Configuration Google Analytics 4
+- Configuration endpoint Formspree
+- Tests Lighthouse et corrections

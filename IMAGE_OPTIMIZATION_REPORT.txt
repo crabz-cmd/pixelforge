@@ -1,0 +1,82 @@
+
+OPTIMISATION DES IMAGES — RAPPORT
+=================================
+Date: 27/03/2026 17:50:16
+Total images: 10
+Taille totale actuelle: 10577.14 KB
+Taille totale optimisée: 790.00 KB
+Économie potentielle: 9787.14 KB (92.5%)
+
+DÉTAILS PAR IMAGE:
+
+logo1.png
+├─ Taille actuelle: 2089.08 KB
+├─ Cible: <50 KB
+├─ Priorité: critical
+└─ Statut: ⚠️  À optimiser
+
+
+spa.png
+├─ Taille actuelle: 1928.34 KB
+├─ Cible: <100 KB
+├─ Priorité: high
+└─ Statut: ⚠️  À optimiser
+
+
+resto.png
+├─ Taille actuelle: 1742.93 KB
+├─ Cible: <100 KB
+├─ Priorité: high
+└─ Statut: ⚠️  À optimiser
+
+
+osalondeli.png
+├─ Taille actuelle: 1294.69 KB
+├─ Cible: <100 KB
+├─ Priorité: high
+└─ Statut: ⚠️  À optimiser
+
+
+mecton-before.png
+├─ Taille actuelle: 1164.55 KB
+├─ Cible: <100 KB
+├─ Priorité: high
+└─ Statut: ⚠️  À optimiser
+
+
+plombier.png
+├─ Taille actuelle: 705.4 KB
+├─ Cible: <80 KB
+├─ Priorité: medium
+└─ Statut: ⚠️  À optimiser
+
+
+mecton.png
+├─ Taille actuelle: 690.42 KB
+├─ Cible: <80 KB
+├─ Priorité: medium
+└─ Statut: ⚠️  À optimiser
+
+
+mecton-main.png
+├─ Taille actuelle: 653.29 KB
+├─ Cible: <80 KB
+├─ Priorité: medium
+└─ Statut: ⚠️  À optimiser
+
+
+mecton-shot2.png
+├─ Taille actuelle: 172.3 KB
+├─ Cible: <50 KB
+├─ Priorité: low
+└─ Statut: ⚠️  À optimiser
+
+
+mecton-shot1.png
+├─ Taille actuelle: 136.14 KB
+├─ Cible: <50 KB
+├─ Priorité: low
+└─ Statut: ⚠️  À optimiser
+
+
+=================================

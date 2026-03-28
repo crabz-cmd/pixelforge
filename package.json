@@ -1,0 +1,13 @@
+{
+  "name": "pixelforge",
+  "version": "1.0.0",
+  "description": "PixelForge — Site vitrine agence web premium",
+  "scripts": {
+    "serve": "npx serve -p 3333 ."
+  },
+  "author": "PixelForge",
+  "license": "ISC",
+  "devDependencies": {
+    "sharp": "^0.34.5"
+  }
+}

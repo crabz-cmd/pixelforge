@@ -1,0 +1,27 @@
+# robots.txt - PixelForge
+# Dernière mise à jour : 27 mars 2026
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.pixelforgelab.fr/sitemap.xml
+
+# Interdire l'accès aux fichiers de configuration
+Disallow: /.*claude*/
+Disallow: /*.git*
+Disallow: /*.md$
+Disallow: /*.txt$
+
+# Autoriser les images et CSS pour les crawlers
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.webp$
+
+# Crawl delay (politesse)
+Crawl-delay: 1

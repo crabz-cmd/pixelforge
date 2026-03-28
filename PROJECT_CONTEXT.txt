@@ -1,0 +1,389 @@
+================================================================================
+  PIXELFORGE — PROJECT CONTEXT
+  Derniere mise a jour : 2026-03-28
+================================================================================
+
+[1] PRESENTATION DU PROJET
+--------------------------------------------------------------------------------
+Nom          : PixelForge
+Tagline      : "Forgez votre presence digitale"
+Objectif     : Site vitrine premium pour une agence web fictive ciblant les
+               commerces locaux (restaurants, salons, artisans, spas...).
+               Le site doit convaincre les prospects de commander un site web.
+Public cible : Proprietaires de commerces locaux francophones (France)
+Type         : Site statique multi-page (HTML/CSS/JS inline) + 4 pages legales
+Langue       : Francais
+URL prevue   : www.pixelforgelab.fr
+Email        : contact@pixelforgelab.fr
+
+
+[2] STACK TECHNIQUE
+--------------------------------------------------------------------------------
+- HTML5 / CSS3 / JavaScript vanilla (ZERO framework, ZERO dependance)
+- Google Fonts : Inter (300-900)
+- Unsplash : images de galerie projets (URLs directes)
+- Formspree : integration formulaire de contact
+- Serveur local : npx serve -p 3333 (config dans .claude/launch.json)
+- Aucune librairie externe (pas de jQuery, Bootstrap, GSAP, etc.)
+
+
+[3] STRUCTURE DU PROJET
+--------------------------------------------------------------------------------
+C:\Users\crabz\PixelForge2\
+  index.html          → Page principale (~3000 lignes, tout inline)
+  projects.html       → Page projets portfolio (~800 lignes)
+  FAQ.html            → Page FAQ dédiée (~600 lignes)
+  legal.html          → Mentions legales
+  privacy.html        → Politique de confidentialite (RGPD)
+  cgv.html            → Conditions generales de service
+  sitemap.xml         → Sitemap Google pour SEO
+  robots.txt          → Regles robots d'indexation
+  favicon.png         → Favicon du site
+  logo1.png           → Logo PixelForge (2.1 MB)
+  mecton.png          → Screenshot projet MECTON (barbier)
+  osalondeli.png      → Screenshot projet O'Salon d'Elisa (coiffure)
+  plombier.png        → Screenshot projet Aquafix (plombier)
+  resto.png           → Screenshot projet Maison Doree (restaurant)
+  spa.png             → Screenshot projet Serenity Spa (spa)
+  mecton-main.png     → Screenshot principal MECTON
+  mecton-before.png   → Avant transformation MECTON
+  mecton-shot1.png    → Capture detail MECTON #1
+  mecton-shot2.png    → Capture detail MECTON #2
+  .claude/launch.json → Config serveur dev local (port 3333)
+  PROJECT_CONTEXT.txt → Ce fichier
+  NEXT_TASK.txt       → Tache suivante
+
+
+[4] ETAT ACTUEL DU DEVELOPPEMENT
+--------------------------------------------------------------------------------
+CONSTRUIT ET FONCTIONNEL :
+  - Hero section complete avec CTA, metriques animees, trust badges
+  - Ticker defilant (technologies/avantages)
+  - Section Services (6 cartes avec images, tags, descriptions)
+  - Section Projets (5 cartes cliquables avec screenshots reels)
+  - Modal portfolio complet (avant/apres slider, galerie, navigation)
+  - Section Temoignages (3 cartes)
+  - Section Processus (4 etapes avec timeline)
+  - Section "Pourquoi PixelForge" (6 cartes avec metriques)
+  - Section "Pourquoi nous" (arguments + urgency card)
+  - Section Offre/CTA band
+  - Section Contact (formulaire Formspree + canaux directs)
+  - Footer complet (nav, liens legaux, copyright)
+  - 4 pages legales (mentions, confidentialite, CGV, FAQ)
+  - Systeme de background multi-couches (blobs, grille, aurora, particules canvas)
+  - Bouton WhatsApp flottant
+  - Pixel cube interactif (a cote de "Vos concurrents ont deja un site")
+  - Scroll fluide avec effets de vitesse sur les liens navbar
+
+PAGES DEDIEES AJOUTEES (2026-03-27/28) :
+  - projects.html : Page portfolio avec grille responsive de 5 projets
+  - FAQ.html : Page FAQ dédiée avec 12 questions/réponses + schema.org
+  - navbar link "Projets" → projects.html
+  - navbar link "FAQ" → FAQ.html
+
+SEO & OPTIMISATIONS (2026-03-27) :
+  - Meta tags Open Graph + Twitter Cards sur toutes les pages
+  - Meta description, keywords, robots, canonical
+  - Schema.org complet (LocalBusiness, Organization, Review, FAQ, WebSite)
+  - sitemap.xml créé (4 URLs indexées)
+  - robots.txt créé (permis tous les bots)
+  - Favicon configuré sur toutes les pages
+
+CORRECTIONS RECENTES :
+  - Slider avant/apres : passe de maskImage (buggé) a clip-path (fiable)
+  - Cadres photos modales : bordures visibles violet/gradient
+  - Cadres cartes projets : bordures visibles violet
+  - Metriques "Pourquoi PixelForge" : remplacees par des chiffres realistes
+  - Fleches navigation modale : deplacees hors du cadre modal (plus de clipping)
+  - Indicateur scroll galerie : bouton anime "Decouvrir les captures"
+
+MISE A JOUR PORTFOLIO MODAL (2026-03-26) :
+  - Glassmorphism sur le conteneur modal (fond semi-transparent + blur)
+  - Animation d'ouverture amelioree (scale + blur + fade)
+  - Transition 3D barrel (rotateY) entre les projets
+  - Handle avant/apres avec animation pulse subtile
+  - Galerie cachee par defaut, revelee au clic sur "Decouvrir les captures"
+  - Zoom plein ecran au clic sur les screenshots galerie
+  - En-tete case study avec localisation + tag resultat
+  - Typographie footer modal amelioree + CTA relifté
+  - Hover 3D sur les vignettes galerie (translateY + scale)
+  - Fleches navigation ecartees davantage vers les bords
+  - Slider avant/apres reduit a 300px pour visibilite du bouton galerie
+  - Photos reelles ajoutees pour le projet MECTON (mecton-main, before, shot1, shot2)
+  - Barre avant/apres : subtile avec halo flou magique
+  - Barrel 3D : toute la fenetre modale bascule vers les cotes (translateX + rotateY + translateZ)
+
+FIX SLIDER AVANT/APRES (2026-03-26) :
+  - Dual clip-path : les deux couches (before + after) sont clippees complementairement
+  - Fond opaque #0a0e18 sur les deux couches (empeche le bleed-through avec object-fit:contain)
+  - z-index explicites : after(1) < before(2) < line/handle(3) < labels(5)
+  - Hauteur responsive clamp(320px, 45vh, 520px) + media query max-height:800px
+  - object-fit:contain pour voir les images en entier sans crop
+
+OVERLAY "VOIR TOUS LES PROJETS" (2026-03-26) :
+  - Bouton ne renvoie plus vers #contact
+  - Overlay plein ecran avec grille responsive de toutes les cartes
+  - Chaque carte : screenshot, categorie, nom, tagline, localisation, badge resultat
+  - Clic ouvre directement le modal du projet
+  - Fermeture par bouton X ou Escape
+
+ANIMATION BORDER GLOW (2026-03-26) :
+  - @property --proj-angle + @keyframes projBorderRotate (2s linear infinite)
+  - conic-gradient sur ::before avec technique masque (padding-box vs border-box)
+  - Applique sur .proj (cartes projets) ET .allproj-card (overlay galerie)
+
+MOBILE RESPONSIVE (2026-03-26/28) :
+  - html/body : overflow-x:hidden (empeche scroll horizontal)
+  - img/video : max-width:100%; height:auto
+  - @media(max-width:768px) :
+    * Modal footer en colonne (CTA pleine largeur)
+    * Padding modal reduit (1rem)
+    * Slider BA : clamp(220px, 38vh, 320px)
+    * Fleches navigation resserrees (0.25rem des bords)
+    * Overlay galerie : 1 colonne
+    * projects-header empile verticalement
+    * projects-grid : 1 colonne avec gap 20px, padding 15px
+  - Desktop pixel-identique : aucune modification hors breakpoints mobiles
+
+PROJECTS.HTML OPTIMISATIONS (2026-03-28) :
+  - Suppression hero section (problème navbar overlap)
+  - Layout optimisé : padding-top 180px pour navbar clearance
+  - Grid responsive : Desktop 3 cols, Tablet 2 cols, Mobile 1 col
+  - Espacements ajustés : header elements bien séparés (1-1.5rem entre)
+  - Cartes projets : padding grid 20px desktop, 15px mobile
+  - Texte unique : descriptions différentes de index.html
+
+BACKGROUND FLICKERING FIX (2026-03-28) :
+  - Ajout transform:translateZ(0) sur #bg-canvas et #bg-canvas-front
+  - Optimisation GPU rendering pour éviter flickering
+
+
+[5] DESIGN & UI/UX
+--------------------------------------------------------------------------------
+PALETTE DE COULEURS :
+  --bg       : #0D0812  (fond principal, tres sombre violet)
+  --bg2      : #110D17  (fond secondaire)
+  --bg3      : #16101E  (fond cartes)
+  --bg4      : #1C1428  (fond screen cartes)
+  --border   : rgba(255,255,255,0.07)
+  --border2  : rgba(255,255,255,0.12)
+  --text     : #F0EAF8  (texte principal, quasi-blanc)
+  --muted    : #7A6B88  (texte secondaire sombre)
+  --muted2   : #B0A0C0  (texte secondaire clair)
+  --a1       : #C840FF  (accent violet vif)
+  --a2       : #FF3A8C  (accent rose)
+  --a3       : #9B30FF
+  --grad     : linear-gradient(135deg, #C840FF, #FF3A8C)
+  --grad2    : linear-gradient(135deg, #9B30FF, #FF6AB0)
+  --glow1    : rgba(200,64,255,0.25)
+  --glow2    : rgba(255,58,140,0.22)
+  --radius   : 16px
+  --radius2  : 24px
+
+TYPOGRAPHIE :
+  Font : Inter (Google Fonts)
+  Titres : 800-900 weight, letter-spacing negatif (-0.03em a -0.045em)
+  Corps : 400-500 weight, line-height 1.6-1.75
+  Font smoothing : -webkit-font-smoothing:antialiased, -moz-osx-font-smoothing:grayscale
+
+NAVBAR (⚠️ VERROUILLEE — NE JAMAIS MODIFIER) :
+  - Selecteur CSS : #nav (PAS nav tag — ca affecte le footer)
+  - Hauteur : 130px → 72px au scroll (transition 0.4s)
+  - Fond : transparent → rgba(13,8,18,0.90) au scroll
+  - Backdrop : none → blur(20px) au scroll
+  - overflow: visible (logo depasse intentionnellement)
+  - Logo : 160px → 130px au scroll
+  - Halo sombre derriere le logo (desactive au scroll)
+  - JS : ajoute .scrolled a scrollY > 60
+  - GAUCHE : Logo (logo1.png)
+  - CENTRE : Services | Projets | Processus | FAQ | Pourquoi nous | Contact
+  - DROITE : Badge "Disponible" + CTA "Demarrer un projet"
+
+HERO :
+  - Plein ecran (min-height: 100vh)
+  - Annonce pill "Nouveau — Sites livres en 14 jours"
+  - Titre 2 lignes avec gradient sur ligne 2
+  - Sous-titre + 2 CTA (primaire gradient + ghost)
+  - Trust badges (devis gratuit, sans engagement, satisfait ou rembourse)
+  - 4 metriques animees avec compteur (87%, 2x, 75%, 3x)
+
+BACKGROUND MULTI-COUCHES :
+  Layer 1 : Gradients radiaux fixes (#bg-l1)
+  Layer 2 : 5 blobs animes avec blur unique (#bg-l2)
+  Layer 2.5 : Grille CSS tech animee (#bg-grid)
+  Layer 2.5 : Aurora sweep horizontale (#bg-aurora)
+  Layer 3 : Canvas particules arriere (#bg-canvas) + avant (#bg-canvas-front)
+  Layer 4 : Vignette radiale (pseudo-element)
+
+MODAL PORTFOLIO :
+  - Overlay plein ecran avec backdrop-filter blur
+  - Box centree max 960px avec animation d'entree
+  - Slider avant/apres avec clip-path + barre subtile + halo flou
+  - Galerie 3 colonnes avec cadres violets visibles
+  - Navigation prev/next avec fleches HORS du cadre
+  - Transition blur+slide entre projets
+  - Dots indicateurs + scroll hint anime
+
+RESPONSIVE :
+  - 3 breakpoints : 1024px, 900px, 640px
+  - Burger menu mobile (top:90px quand ouvert)
+  - Grilles passent de multi-colonnes a 1 colonne
+  - Logo reduit sur mobile (56px)
+  - CTA bar fixe en bas sur mobile
+  - Animations reveal desactivees sur petit ecran
+
+
+[6] FONCTIONNALITES EXISTANTES
+--------------------------------------------------------------------------------
+1.  Navbar sticky avec transition scroll (transparent → blur dark)
+2.  Systeme de particules canvas dual (arriere + avant)
+3.  Background anime multi-couches (blobs, grille, aurora)
+4.  Animations reveal au scroll (IntersectionObserver)
+5.  Compteurs animes dans les metriques hero
+6.  Ticker defilant infini
+7.  Cartes services avec hover effects + glow
+8.  Cartes projets avec gradient border on hover
+9.  Modal portfolio avec slider avant/apres (clip-path)
+10. Navigation inter-projets avec animation blur+slide
+11. Galerie photos dans la modale avec cadres violets
+12. Indicateur scroll "Decouvrir les captures" anime
+13. Formulaire de contact Formspree avec validation + success state
+14. Scroll fluide custom avec deceleration (ease-out quint)
+15. Effets de vitesse (speed lines) pendant le scroll navbar
+16. Pixel cube interactif (tilt au curseur, explosion au clic)
+17. Bouton WhatsApp flottant avec tooltip
+18. CTA bar mobile fixe en bas
+19. Menu burger responsive
+20. Pages legales (mentions, confidentialite, CGV, FAQ)
+21. Widget de conversion anime dans la section featured service
+22. Lien actif surligne au scroll dans la navbar
+23. Page projects.html avec grille responsive et layout optimisé
+24. Page FAQ.html avec accordion interactif et schema.org
+
+
+[7] PROBLEMES CONNUS
+--------------------------------------------------------------------------------
+- Logo (logo1.png) fait 2.1 MB — devrait etre optimise/compresse
+- Les images projets (.png) sont lourdes (700KB-1.9MB) — convertir en WebP
+- Les images Unsplash dependent d'une connexion internet
+- Le formulaire Formspree necessite un vrai endpoint (actuellement placeholder)
+- Numero WhatsApp est un placeholder (33600000000)
+- Section #local (duplicata de #pourquoi-nous) est cachee (display:none) mais
+  reste dans le DOM — peut etre supprimee
+- Performance mobile pourrait etre amelioree (canvas particules lourd)
+- Analytics GA4 placeholder (G-XXXXXXXXXX) — besoin ID réel
+
+
+[8] DECISIONS IMPORTANTES
+--------------------------------------------------------------------------------
+- Architecture multi-page : index.html (main) + projects.html + FAQ.html + pages legales
+- Tout CSS/JS inline dans chaque fichier pour simplifier le deploiement
+- Zero dependance : aucune librairie externe, tout est vanilla
+- Selecteur #nav (ID) au lieu de nav (tag) : critique pour eviter de cibler
+  le <nav class="footer-nav"> dans le footer
+- overflow:visible sur #nav : le logo depasse intentionnellement la hauteur
+  de la navbar
+- clip-path au lieu de mask-image pour le slider avant/apres : meilleure
+  compatibilite cross-browser
+- Fleches modale HORS du modal-box : evite le clipping par overflow:hidden
+- scroll-behavior:auto sur html : le scroll est gere en JS custom pour
+  permettre les effets de vitesse
+- isolation:isolate sur #nav et body : empeche les canvas de "saigner"
+  a travers la navbar
+- transform:translateZ(0) sur canvas : optimisation GPU pour éviter flickering
+
+
+[9] REGLES IMPORTANTES
+--------------------------------------------------------------------------------
+⚠️  NAVBAR VERROUILLEE : Ne JAMAIS modifier le CSS/HTML de #nav.
+    Les regles exactes sont dans la memoire projet :
+    C:\Users\crabz\.claude\projects\c--Users-crabz-PixelForge2\memory\project_navbar_lock.md
+
+⚠️  Ne JAMAIS utiliser le selecteur CSS "nav { }" (sans #) — cela affecte
+    aussi <nav class="footer-nav"> dans le footer.
+
+⚠️  Ne JAMAIS ajouter overflow:hidden sur #nav (coupe le logo surdimensionne).
+
+⚠️  Ne JAMAIS ajouter de liens legaux dans la navbar (uniquement dans le footer).
+
+⚠️  Ne JAMAIS dupliquer la navbar ou creer une seconde nav au scroll.
+
+⚠️  Le scroll est gere en JS custom (pas css scroll-behavior:smooth) —
+    ne pas re-ajouter scroll-behavior:smooth sur html.
+
+⚠️  Les pages legales (legal.html, privacy.html, cgv.html, FAQ.html) ont leur propre
+    CSS inline + une navbar simplifiee (pas le meme #nav que index.html).
+
+⚠️  Garder le design premium/sombre. Pas de fond blanc, pas de couleurs vives
+    non-brand.
+
+⚠️  projects.html et FAQ.html : maintenir layout optimisé, pas de hero section
+    qui cause navbar overlap.
+
+
+[10] PROCHAINES ETAPES POSSIBLES
+--------------------------------------------------------------------------------
+- [ ] Optimiser les images (WebP, compression, lazy loading ameliore)
+- [ ] Configurer le vrai endpoint Formspree
+- [ ] Remplacer le numero WhatsApp placeholder
+- [ ] Supprimer la section #local (display:none) dupliquee
+- [ ] Ajouter des animations micro-interactions (boutons, inputs focus)
+- [ ] Implementer un cookie banner (RGPD)
+- [ ] Tester et corriger les performances Lighthouse
+- [ ] Ajouter une page 404 custom
+- [ ] Configurer Google Analytics 4 avec ID réel
+
+
+[11] INSTRUCTIONS POUR REPRISE DU PROJET
+--------------------------------------------------------------------------------
+1. Le projet est dans C:\Users\crabz\PixelForge2\
+2. index.html contient toute la page principale (CSS + HTML + JS inline, ~3000 lignes)
+3. projects.html contient la page portfolio dédiée (~800 lignes)
+4. FAQ.html contient la page FAQ dédiée (~600 lignes)
+5. Les pages legales sont des fichiers HTML autonomes
+6. Pour lancer le serveur local : npx serve -p 3333 C:\Users\crabz\PixelForge2
+7. LIRE ce fichier en premier pour comprendre le contexte
+8. LIRE NEXT_TASK.txt pour savoir quoi faire ensuite
+9. LIRE le fichier memoire navbar :
+   C:\Users\crabz\.claude\projects\c--Users-crabz-PixelForge2\memory\project_navbar_lock.md
+10. NE JAMAIS toucher a la navbar (#nav) sans autorisation explicite
+11. Tester sur mobile (burger menu, CTA bar fixe, grilles responsive)
+12. Les images Unsplash necessitent une connexion internet pour s'afficher
+13. projects.html : layout optimisé sans hero section, padding-top 180px pour navbar
+14. FAQ.html : page dédiée avec accordion et schema.org/FAQPage
+
+STRUCTURE DU CODE index.html :
+  Lignes 1-1357      : CSS (tout le style inline dans <style>)
+  Lignes 1358-2285   : HTML (structure de la page + modal)
+  Lignes 2286-3070+  : JavaScript (particules, modal, slider, scroll, etc.)
+
+STRUCTURE DU CODE projects.html :
+  Lignes 1-600        : CSS (tout le style inline)
+  Lignes 601-800+     : HTML (structure page + projects grid)
+  Lignes 800+          : JavaScript (modal portfolio, scroll)
+
+SECTIONS HTML PRINCIPALES (index.html dans l'ordre) :
+  #bg-wrap          → Background multi-couches
+  #nav              → Navbar (VERROUILLEE)
+  #hero             → Hero section
+  .ticker-section   → Ticker defilant
+  #services         → Services (6 cartes)
+  #proof            → Temoignages
+  #process          → Processus (4 etapes)
+  #projects         → Projets (5 cartes sur index.html)
+  #why              → Pourquoi PixelForge (6 cartes)
+  #pourquoi-nous    → Arguments + urgency card + pixel cube
+  #offer            → CTA band
+  #contact          → Formulaire contact
+  #footer           → Footer
+  #proj-modal       → Modal portfolio (overlay)
+
+SECTIONS HTML PRINCIPALES (projects.html) :
+  #bg-wrap          → Background multi-couches (optimisé)
+  #nav              → Navbar (VERROUILLEE)
+  #projects         → Section projets principale (header + grid responsive)
+
+SECTIONS HTML PRINCIPALES (FAQ.html) :
+  #bg-wrap          → Background multi-couches
+  #nav              → Navbar (VERROUILLEE)
+  #faq              → Section FAQ avec 12 questions/answers
